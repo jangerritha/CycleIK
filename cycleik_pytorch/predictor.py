@@ -1,5 +1,3 @@
-# Copyright (c) 2023. Jan-Gerrit Habekost. GNU General Public License https://www.gnu.org/licenses/gpl-3.0.html.
-
 import random
 
 from .models import GenericGenerator, GenericNoisyGenerator
@@ -11,22 +9,47 @@ import time
 import os
 from pathlib import Path
 from tqdm import tqdm
-import pybullet as p
 import concurrent.futures
+from scipy.spatial.transform import Rotation as R
+import gdown
+
 
 class CycleIK:
 
-    def __init__(self, robot, cuda_device=None, verbose=False):
+    def __init__(self, robot, cuda_device=None, verbose=False, chain=""):
         assert robot is not None and type(robot) == str, "Robot name must be set as string with valid config in path"
+
+        data_path = os.path.dirname(os.path.abspath(__file__))
+        print(f"data path: {data_path}")
+
+        try:
+            os.makedirs(data_path + "/../weights")
+        except OSError:
+            pass
+
+        try:
+            os.makedirs(data_path + f"/../weights/{robot}")
+        except OSError:
+            pass
+
         self.robot = robot
         self.device_name = "cpu" if cuda_device is None else f"cuda:{cuda_device}"
         self.device = torch.device(self.device_name)
-        self.config = load_config(robot)
+        self.config = load_config(robot)[f'{chain}']
         self.verbose = verbose
+        self.chain = chain
 
         self.robot_dof   = self.config["robot_dof"]
         self.robot_urdf  = self.config["robot_urdf"]
         self.robot_eef   = self.config["robot_eef"]
+
+        #self.physicsClient = p.connect(p.DIRECT)
+        ##self.pybullet_robot = p.loadURDF(f"../assets/urdf/{self.robot_urdf}", flags=p.URDF_USE_SELF_COLLISION)
+        #self.pybullet_robot = p.loadURDF(f"/home/jan-gerrit/repositories/cycleik/assets/urdf/NICOL.urdf", flags=p.URDF_USE_SELF_COLLISION)
+        ## nbr_joints = p.getNumJoints(robot)
+        #self.pybullet_joint_ids = [35, 36, 37, 38, 39, 40, 41, 42]
+        #self.collision_check_initial_position = [1.5, 0., 0., 0., 0., 0., 0., 0.]
+        #p.setTimeStep(100, self.pybullet_robot)
 
         workspace_interval_array, workspace_center_array, limits_upper, limits_lower, normalize_interval_array, normalize_center_array = get_kinematic_params(self.config)
         self.workspace_interval_array   = torch.Tensor(workspace_interval_array).to(self.device)
@@ -49,16 +72,34 @@ class CycleIK:
 
         data_path = str(Path(__file__).parent.parent.absolute())
         try:
-            self.model.load_state_dict(torch.load(os.path.join(data_path, "weights", str(self.robot), "netG_B2A_with_kinematics.pth")))
-        except FileNotFoundError:
-            pass
-        except RuntimeError:
-            pass
+            model_path = os.path.join(data_path, "weights", str(self.robot), f"model_MLP_with_kinematics_{self.chain}.pth")
+            print(f"Model path: {model_path}")
+            self.model.load_state_dict(torch.load(model_path, map_location=self.device))
+        except FileNotFoundError as e:
+            print("\n\n FileNotFoundError, did not load CycleIK Network weights! You probably have the wrong checkpoint name. \n\n")
+
+            if 'pretrained_weights' in self.config['IKNet'].keys():
+                url = self.config['IKNet']['pretrained_weights']
+                output = os.path.dirname(os.path.abspath(__file__))
+                output = os.path.join(output, f'../weights/{self.robot}/model_MLP_with_kinematics_{self.chain}.pth')
+                print("Found pretrained weights, attempting to download them")
+                gdown.download(url, output, quiet=False, fuzzy=True)
+
+            try:
+                self.model.load_state_dict(torch.load(model_path, map_location=self.device))
+            except FileNotFoundError as e:
+                print("\n\n FileNotFoundError, did not load CycleIK Network weights! You probably have the wrong checkpoint name. \n\n")
+
+        except RuntimeError as e:
+            print("\n\n Runtime Warning, did not load CycleIK Network weights! \n\n")
+            raise e
         try:
-            self.gan.load_state_dict(torch.load(os.path.join(data_path, "weights", str(self.robot), "netG_B2A_GAN_with_kinematics.pth")))
-        except FileNotFoundError:
+            self.gan.load_state_dict(torch.load(os.path.join(data_path, "weights", str(self.robot), f"model_GAN_with_kinematics_{self.chain}.pth"), map_location=self.device))
+        except FileNotFoundError as e:
+            print("\n\n FileNotFoundError, did not load CycleIK Network weights! You probably have the wrong checkpoint name. \n\n")
             pass
-        except RuntimeError:
+        except RuntimeError as e:
+            print("\n\n Runtime Warning, did not load CycleIK Network weights! \n\n")
             pass
         self.model.eval()
 
@@ -67,54 +108,8 @@ class CycleIK:
         self.chain = chain.to(dtype=torch.float32, device=self.device)
 
     def __del__(self):
-        p.disconnect()
-
-    def check_single_collision(self, sample_js):
-        for i, joint_id in enumerate(self.pybullet_joint_ids):
-            # print(p.getJointInfo(self.pybullet_robot, jointIndex=joint_id))
-            p.resetJointState(self.pybullet_robot, joint_id, self.collision_check_initial_position[i])
-
-        # print(len(p.getContactPoints(self.pybullet_robot, self.pybullet_robot)))
-        for i in range(1):
-            p.stepSimulation(self.pybullet_robot)
-        # time.sleep(0.001)
-
-        initial_contacts = len(p.getContactPoints(self.pybullet_robot, self.pybullet_robot))
-        # print(f"Initial contacts : {initial_contacts}")
-
-        # time.sleep(15)
-
-        res = p.setJointMotorControlArray(self.pybullet_robot, self.pybullet_joint_ids, controlMode=p.POSITION_CONTROL,
-                                          targetPositions=sample_js)
-
-        for i in range(1):
-            p.stepSimulation(self.pybullet_robot)
-
-        print("here")
-
-        if len(p.getContactPoints(self.pybullet_robot, self.pybullet_robot)) > initial_contacts:
-            return True
-        else:
-            return False
-
-    def check_collision(self, joint_states):
-
-        collision_counter = 0
-
-        with concurrent.futures.ThreadPoolExecutor(max_workers=20) as executor:
-            # map
-            l = list(executor.map(lambda sample_js: self.check_single_collision(sample_js), list(joint_states)))
-
-        print(len(l))
-        #for k in tqdm(range(len(joint_states))):
-        #    sample_js = list(joint_states[k])
-        #
-        #
-        #    if self.check_single_collision(sample_js):
-        #        #print("self collision")
-        #        collision_counter += 1
-
-        print(collision_counter)
+        #p.disconnect()
+        pass
 
     def get_random_samples(self, batch_size):
         random_js = (torch.rand((batch_size, self.robot_dof)).to(self.device) - 0.5) * 2
@@ -169,7 +164,17 @@ class CycleIK:
             et = time.time()
             elapsed_time_fk = et - st
             print(f'PK Pose: {forward_result}')
-            error = torch.abs(torch.subtract(forward_result, unnormalized_poses)).detach().cpu().numpy()
+
+            unnormalized_poses_rot = unnormalized_poses.detach().cpu().numpy()
+            reached_poses_rot = forward_result.detach().cpu().numpy()
+            r_target = R.from_quat(list(unnormalized_poses_rot[:, 3:]))
+            r_result = R.from_quat(list(reached_poses_rot[:, 3:]))
+            # print(r_result)
+            rotation_diff = r_target * r_result.inv()
+            rotation_diff_save = rotation_diff.as_euler('zyx', degrees=True)
+            rotation_diff = np.abs(rotation_diff_save)
+
+            error = torch.abs(torch.concat((torch.subtract(forward_result[:, :3], unnormalized_poses[:, :3]), torch.Tensor(rotation_diff).to(self.device)), dim=1)).detach().cpu().numpy()
 
         js_result = js_result.detach().cpu().numpy()
 
@@ -200,6 +205,33 @@ class CycleIK:
         et = time.time()
         elapsed_time_ik = et - st
 
+        def sort_the_array_column_wise(arr):
+            for j in range (len(arr[0])):
+                for i in range(len(arr) - 1):
+                    if arr[i][j] < arr[i + 1][j]:
+                        temp = arr[i][j]
+                        arr[i][j] = arr[i + 1][j]
+                        arr[i + 1][j] = temp
+
+            for i in range(len(arr)):
+
+                for j in range(len(arr[0])):
+
+                    print(arr[i][j], end=" ")
+
+                print()
+
+        size = len(js_result)
+        print("The array before performing sorting operation is: ")
+        for i in range(len(js_result)):
+            for j in range(len(js_result[0])):
+
+                print(js_result[i][j], end=" ")
+            print()
+
+        print("The array after performing sorting operation is: ")
+        sort_the_array_column_wise(js_result)
+
         error = None
         elapsed_time_fk = None
         if calculate_error:
@@ -210,7 +242,7 @@ class CycleIK:
             et = time.time()
             elapsed_time_fk = et - st
             print(f'PK Pose: {forward_result}')
-            error = torch.mean(torch.abs(torch.subtract(forward_result, unnormalized_pose.repeat((js_samples, 1)))), dim=0).detach().cpu().numpy()
+            error = torch.abs(torch.subtract(forward_result, unnormalized_pose.repeat((js_samples, 1)))).detach().cpu().numpy()
 
         js_result = js_result.detach().cpu().numpy()
 

@@ -1,10 +1,11 @@
+pillow
 tqdm
 matplotlib
+opencv-python
 numpy
-tensorboard
 torch
-torchvision
 networkx
-pybullet
-optuna
 open3d
+torchvision
+gdown
+optuna

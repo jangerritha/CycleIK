@@ -1,5 +1,3 @@
-# Copyright (c) 2023. Jan-Gerrit Habekost. GNU General Public License https://www.gnu.org/licenses/gpl-3.0.html.
-
 import random
 import torch
 import yaml
@@ -8,11 +6,41 @@ import numpy as np
 from pathlib import Path
 import pytorch_kinematics as pk
 
+class ReplayBuffer:
+    def __init__(self, max_size=10000):
+        assert (max_size > 0), "Empty buffer or trying to create a black hole. Be careful."
+        self.max_size = max_size
+        self.data = []
+
+    def push_and_pop(self, data):
+        to_return = []
+        #print("unsqueeze: {0}".format(data))
+        if len(self.data) < self.max_size:
+            self.data.append(data)
+            to_return.append(data)
+        else:
+            if random.uniform(0, 1) > 0.5:
+                to_return.append(data)
+                i = random.randint(0, self.max_size - 1)
+                self.data[i] = data
+            else:
+                to_return.append(data)
+        return torch.cat(to_return)
+
 def load_config(robot):
     data_path = str(Path(__file__).parent.parent.absolute())
     with open(data_path + f"/config/{robot}.yaml", "r") as f:
         config = yaml.safe_load(f)
     return config
+
+# custom weights initialization called on netG and netD
+def weights_init(m):
+    classname = m.__class__.__name__
+    if classname.find("Conv") != -1:
+        torch.nn.init.normal_(m.weight, 0.0, 0.02)
+    elif classname.find("BatchNorm") != -1:
+        torch.nn.init.normal_(m.weight, 1.0, 0.02)
+        torch.nn.init.zeros_(m.bias)
 
 def get_kinematic_params(config):
     workspace_upper = np.array(config["workspace"]["upper"])

@@ -1,5 +1,3 @@
-# Copyright (c) 2023. Jan-Gerrit Habekost. GNU General Public License https://www.gnu.org/licenses/gpl-3.0.html.
-
 
 class DecayLR:
     def __init__(self, epochs, offset, decay_epochs):
@@ -12,3 +10,5 @@ class DecayLR:
     def step(self, epoch):
         return 1.0 - max(0, epoch + self.offset - self.decay_epochs) / (
                 self.epochs - self.decay_epochs)
+
+

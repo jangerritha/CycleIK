@@ -1,33 +1,24 @@
 # CycleIK
 
 ## Overview
-Implementation of CycleIK, ICANN 23 version to reproduce the results
-
-For the updated architecture that offers full PyTorch support for the whole Neuro-Genetic IK Pipeline, please see branch: [`dev`](https://git.informatik.uni-hamburg.de/jangerritha/cycleik.git)
+Implementation of CycleIK 
 
 Paper: https://arxiv.org/abs/2307.11554
 
 Accepted at ICANN 23 (32nd International Conference on Artificial Neural Networks)
 
-<br>
-<br>
+<img src="/assets/img/example_GAN_nicol.png"  height="320"><br>*Example output of the CycleIK GAN for the Neuro-Inspired Collaborator (NICOL)*
 
-<img src="/assets/img/example_GAN_nicol.png"  height="310"><br>*Example output of the CycleIK GAN for the Neuro-Inspired Collaborator (NICOL)*
+## Hybrid Neuro-Genetic IK Pipeline
+<img src="/assets/img/cycleik_ik_pipeline.jpg"  height="320"><br>*Hybrid neuro-genetic IK pipeline. The neural solutions for pose X can
+optionally be optimized with the Gaikpy GA and SLSQP, given the constraints L.*
 
-<br>
-<br>
+### Installation
 
-<img src="/assets/img/overlay_real_nicol.png"  height="320"><br>*CycleIK MLP deployed to physical Neuro-Inspired Collaborator (NICOL)*
-
-<br>
-<br>
-
-------------------------------------------------------------------------------------------------------------------------
-
-## Installation
+#### Clone and install requirements
 
 ```bash
-git clone -b ICANN23_version https://git.informatik.uni-hamburg.de/jangerritha/cycleik.git
+git clone -b dev https://git.informatik.uni-hamburg.de/jangerritha/cycleik.git
 cd cycleik/
 pip install -r requirements.txt
 cd ..
@@ -39,191 +30,73 @@ cd ../cycleik
 pip install -e .
 ```
 
-------------------------------------------------------------------------------------------------------------------------
+#### Download pretrained weights
 
-## Experiment Setup
-
-### Download dataset
-Download the following datasets and place them in `<path_to_repo>/data/`
-
-#### Small Workspace
-[Training Data](https://drive.google.com/file/d/1aniD5yotkjCtwx-A6wW7SXaSxZPvQYAt/view?usp=sharing)
-
-[Test Data](https://drive.google.com/file/d/1nyhTPRSfbSoKTG9FL2KHO0xo-_VSM_H7/view?usp=sharing)
-
-[Validation Data](https://drive.google.com/file/d/16zZaEhE4gTDME8pEaeqMn52g-sk9elis/view?usp=sharing)
-
-
-#### Full Workspace
-[Training Data](https://drive.google.com/file/d/19jP3gQxUCFXWFN_5VJv-NfG8gfZvPOjH/view?usp=sharing)
-
-[Test Data](https://drive.google.com/file/d/1fU5Dad5E2UP-klXnmpcJMjn_FyKNk4jU/view?usp=sharing)
-
-[Validation Data](https://drive.google.com/file/d/15A4nCzJcyvWZpKnr2bAPTvhyQJVDxHD3/view?usp=sharing)
-
-------------------------------------------------------------------------------------------------------------------------
-
-### Download pretrained weights (best models)
-
-Download the following pre-trained model weights and place them in `<path_to_repo>/weights/nicol/`
-
-#### MLP 
-[Small workspace](https://drive.google.com/file/d/19DsbI91V2r8QvHONJflKbGAyO2PEKD8P/view?usp=sharing)
-
-[Full workspace](https://drive.google.com/file/d/1Z57bRYDjpos2cEPTnZZQplaKBsAANS1_/view?usp=sharing)
-
-#### GAN
-[Small workspace](https://drive.google.com/file/d/16wTyCIWuJutKUOUsQqyz5nqAVX4Cdrvb/view?usp=sharing)
-
-[Full workspace](https://drive.google.com/file/d/1VA4D9hMMjZRcrDqBLz_pC3GCronS_djb/view?usp=sharing)
-
-------------------------------------------------------------------------------------------------------------------------
-
-### Config
-
-Configure the config file under `<path_to_repo>/config/nicol.yaml` for either the `Small` or the `Full` workspace
-
-#### Small Workspace
+```bash
 
 ```
-train_data: 'results_nicol_1000_3'
-test_data: 'results_nicol_10_3'
-val_data: 'results_nicol_100_3'
 
-robot_dof: 8
-limits:
-  upper: [2.5, 1.8, 1.5, 2.9, 1.570796, 3.141592, 0.785398, 0.785398]
-  lower: [0., -1.5, -2.25, -2.9, -1.570796, -3.141592, -0.785398, -0.785398]
+#### Download dataset
 
-workspace:
-  upper: [0.85, 0.0, 1.4]
-  lower: [0.2, -0.9, 0.8]
-
-
-robot_urdf: './assets/urdf/NICOL.urdf'
-robot_eef: 'r_laser'
-
-zero_joints_goal: [2, 3, 4, 5]
-
-FKNet:
-  training:
-    batch_size: 700
-    lr: 0.0001
-
-  architecture:
-    layers:  [1900, 2700, 3000, 2900, 450, 60, 10, 160]
-    nbr_tanh: 3
-    activation: "GELU"
-
-IKNet:
-  training:
-    batch_size: 150
-    lr: 0.00016
-
-  architecture:
-    layers:  [3380, 2250, 3240, 2270, 1840, 30, 60, 220]
-    nbr_tanh: 3
-    activation: "GELU"
-
-GAN:
-  training:
-    batch_size: 350
-    lr: 0.00021
-
-  architecture:
-    noise_vector_size: 8
-    layers: [ 790, 990, 3120, 1630, 300, 1660, 730, 540 ]
-    nbr_tanh: 3
-    activation: "GELU"
-```
-
-#### Full Workspace
+```bash
 
 ```
-train_data: 'results_nicol_1400_5'
-test_data: 'results_nicol_14_5'
-val_data: 'results_nicol_140_5'
 
-robot_dof: 8
-limits:
-  upper: [2.5, 1.8, 1.5, 2.9, 1.570796, 3.141592, 0.785398, 0.785398]
-  lower: [0., -1.5, -2.25, -2.9, -1.570796, -3.141592, -0.785398, -0.785398]
+### Test
 
-workspace:
-  upper: [0.85, 0.48, 1.4]
-  lower: [0.2, -0.9, 0.8]
+The following commands can be used to test the whole test.
 
-
-robot_urdf: './assets/urdf/NICOL.urdf'
-robot_eef: 'r_laser'
-
-zero_joints_goal: [3, 4]
-
-FKNet:
-  training:
-    batch_size: 700
-    lr: 0.0001
-
-  architecture:
-    layers:  [1900, 2700, 3000, 2900, 450, 60, 10, 160]
-    nbr_tanh: 3
-    activation: "GELU"
-
-IKNet:
-  training:
-    batch_size: 300
-    lr: 0.0001
-
-  architecture:
-    layers:  [2200, 2400, 2400, 1900, 250, 220, 30, 380]
-    nbr_tanh: 3
-    activation: "GELU"
-
-GAN:
-  training:
-    batch_size: 300
-    lr: 0.00019
-
-  architecture:
-    noise_vector_size: 10
-    layers: [ 1180, 1170, 2500, 1290, 700, 970, 440, 770 ]
-    nbr_tanh: 2
-    activation: "GELU"
-```
-
-------------------------------------------------------------------------------------------------------------------------
-
-## Test
-
-It is recommended to run the tests on the GPU by using the `--cuda` flag
-
-### MLP
+```bash
 
 ```
-    python test_ik.py --cuda
-```
 
-### GAN
+For single image processing, use the following command.
 
-```
-    python test_GAN.py --cuda
+```bash
+
 ```
 
 
-## Train
+### Train
 
-It is recommended to run the training on the GPU by using the `--cuda` flag
+```text
+usage: train.py [-h] [--dataroot DATAROOT] [--dataset DATASET] [--epochs N]
+                [--decay_epochs DECAY_EPOCHS] [-b N] [--lr LR] [-p N] [--cuda]
+                [--netG_A2B NETG_A2B] [--netG_B2A NETG_B2A] [--netD_A NETD_A]
+                [--netD_B NETD_B] [--image-size IMAGE_SIZE] [--outf OUTF]
+                [--manualSeed MANUALSEED]
 
-### MLP
+PyTorch implements `Unpaired Image-to-Image Translation using Cycle-Consistent
+Adversarial Networks`
 
-```
-    python train_ik.py --cuda
-```
+optional arguments:
+  -h, --help            show this help message and exit
+  --dataroot DATAROOT   path to datasets. (default:./data)
+  --dataset DATASET     dataset name. (default:`horse2zebra`)Option:
+                        [apple2orange, summer2winter_yosemite, horse2zebra,
+                        monet2photo, cezanne2photo, ukiyoe2photo,
+                        vangogh2photo, maps, facades, selfie2anime,
+                        iphone2dslr_flower, ae_photos, ]
+  --epochs N            number of total epochs to run
+  --decay_epochs DECAY_EPOCHS
+                        epoch to start linearly decaying the learning rate to
+                        0. (default:100)
+  -b N, --batch-size N  mini-batch size (default: 1), this is the total batch
+                        size of all GPUs on the current node when using Data
+                        Parallel or Distributed Data Parallel
+  --lr LR               learning rate. (default:0.0002)
+  -p N, --print-freq N  print frequency. (default:100)
+  --cuda                Enables cuda
+  --netG_A2B NETG_A2B   path to netG_A2B (to continue training)
+  --netG_B2A NETG_B2A   path to netG_B2A (to continue training)
+  --netD_A NETD_A       path to netD_A (to continue training)
+  --netD_B NETD_B       path to netD_B (to continue training)
+  --image-size IMAGE_SIZE
+                        size of the data crop (squared assumed). (default:256)
+  --outf OUTF           folder to output images. (default:`./outputs`).
+  --manualSeed MANUALSEED
+                        Seed for initializing training. (default:none)
 
-### GAN
-
-```
-    python train_GAN.py --cuda
 ```
 
 ## Model Description
@@ -241,3 +114,13 @@ In addition a GAN is available that offers exploration of the nullspace to produ
 poses X is inferenced by either the MLP or GAN to obtain the batch of joint angles
 Θ. The joint angles are transformed back to Cartesian space X by the FK(Θ)
 function to be evaluated by the multi-objective function under constraints L.*
+
+### Contributing
+
+If you find a bug, create a GitHub issue, or even better, submit a pull request. Similarly, if you have questions, simply post them as GitHub issues.   
+
+I look forward to seeing what the community does with these models! 
+
+### Credit
+
+

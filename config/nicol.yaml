@@ -1,126 +1,108 @@
-#train_data: 'results_nicol_1400_5'
-#test_data: 'results_nicol_14_5'
-#val_data: 'results_nicol_140_5'
-train_data: 'results_nicol_1000_3'
-test_data: 'results_nicol_10_3'
-val_data: 'results_nicol_100_3'
-#train_data: 'results_nicol_1mio'
-#test_data: 'results_nicol_100k'
-#val_data: 'results_nicol_10k'
+right_arm:
 
-robot_dof: 8
-limits:
-  upper: [2.5, 1.8, 1.5, 2.9, 1.570796, 3.141592, 0.785398, 0.785398]
-  lower: [0., -1.5, -2.25, -2.9, -1.570796, -3.141592, -0.785398, -0.785398]
+  train_data: 'results_nicol_1400_5'
+  test_data: 'results_nicol_14_5'
+  val_data: 'results_nicol_140_5'
 
-workspace:
-  upper: [0.85, 0.0, 1.4]
-#  upper: [0.85, 0.48, 1.4]
-  lower: [0.2, -0.9, 0.8]
+  robot_dof: 8
+  limits:
+    upper: [ 2.5, 1.8, 1.5, 2.9, 1.570796, 3.141592, 0.785398, 0.785398 ]
+    lower: [ 0., -1.5, -2.25, -2.9, -1.570796, -3.141592, -0.785398, -0.785398 ]
+
+  workspace:
+    upper: [ 0.85, 0.48, 1.4 ]
+    lower: [ 0.2, -0.9, 0.8 ]
 
 
-robot_urdf: './assets/urdf/NICOL.urdf'
-robot_eef: 'r_laser'
+  robot_urdf: './assets/urdf/NICOL.urdf'
+  robot_eef: 'r_laser'
+  base_link: world
+  zero_joints_goal: [ 3, 4 ]
 
-zero_joints_goal: [ 2, 3, 4, 5 ]
-#zero_joints_goal: [ 3, 4 ]
+  FKNet:
+    training:
+      batch_size: 700
+      lr: 0.0001
 
-#################### Small #######################
-FKNet:
-  training:
-    batch_size: 700
-    lr: 0.0001
+    architecture:
+      layers: [ 1900, 2700, 3000, 2900, 450, 60, 10, 160 ]
+      nbr_tanh: 3
+      activation: "GELU"
 
-  architecture:
-    layers:  [1900, 2700, 3000, 2900, 450, 60, 10, 160]
-    nbr_tanh: 3
-    activation: "GELU"
+  IKNet:
+    pretrained_weights: "https://drive.google.com/uc?export=download&id=1oSFayrzvXtVsbzSp7HS8vVJ83EL2-Ggn"
 
-IKNet:
-  training:
-    batch_size: 150
-    lr: 0.00016
+    training:
+      batch_size: 300
+      lr: 0.0001
 
-  architecture:
-    layers:  [3380, 2250, 3240, 2270, 1840, 30, 60, 220]
-    nbr_tanh: 3
-    activation: "GELU"
+    architecture:
+      layers: [ 2200, 2400, 2400, 1900, 250, 220, 30, 380 ]
+      nbr_tanh: 3
+      activation: "GELU"
 
-GAN:
-  training:
-    batch_size: 350
-    lr: 0.00021
+  GAN:
+    training:
+      batch_size: 300
+      lr: 0.00019
 
-  architecture:
-    noise_vector_size: 8
-    layers: [ 790, 990, 3120, 1630, 300, 1660, 730, 540 ]
-    nbr_tanh: 3
-    activation: "GELU"
-###################################################
+    architecture:
+      noise_vector_size: 10
+      layers: [ 1180, 1170, 2500, 1290, 700, 970, 440, 770 ]
+      nbr_tanh: 2
+      activation: "GELU"
 
+left_arm:
 
-#################### Full #######################
-#FKNet:
-#  training:
-#    batch_size: 700
-#    lr: 0.0001
-#
-#  architecture:
-#    layers:  [1900, 2700, 3000, 2900, 450, 60, 10, 160]
-#    nbr_tanh: 3
-#    activation: "GELU"
-#
-##IKNet:
-##  training:
-##    batch_size: 150
-##    lr: 0.00012
-##
-##  architecture:
-##    layers:  [2510, 3110, 2550, 2940, 1950, 1260, 200, 240]
-##    nbr_tanh: 2
-##    activation: "GELU"
-#
-#IKNet:
-#  training:
-#    batch_size: 300
-#    lr: 0.0001
-#
-#  architecture:
-#    layers:  [2200, 2400, 2400, 1900, 250, 220, 30, 380]
-#    nbr_tanh: 3
-#    activation: "GELU"
-#
-#GAN:
-#  training:
-#    batch_size: 300
-#    lr: 0.00019
-#
-#  architecture:
-#    noise_vector_size: 10
-#    layers: [ 1180, 1170, 2500, 1290, 700, 970, 440, 770 ]
-#    nbr_tanh: 2
-#    activation: "GELU"
-###################################################
+  train_data: 'results_nicol_1400_left'
+  test_data: 'results_nicol_14_left'
+  val_data: 'results_nicol_140_left'
+
+  robot_dof: 8
+  limits:
+    upper: [0., 1.8, 1.5, 2.9, 1.570796, 3.141592, 0.785398, 0.785398]
+    lower: [-2.5, -1.5, -2.25, -2.9, -1.570796, -3.141592, -0.785398, -0.785398]
+
+  workspace:
+    upper: [0.8374, 0.9, 1.4]
+    lower: [0.2, -0.4598, 0.8]
 
 
-### Old seed from FK learning, unoptimized for new data ###
-#IKNet:
-#  training:
-#    batch_size: 300
-#    lr: 0.0001
-#
-#  architecture:
-#    layers:  [2200, 2400, 2400, 1900, 250, 220, 30, 380]
-#    nbr_tanh: 3
-#    activation: "GELU"
+  robot_urdf: './assets/urdf/NICOL.urdf'
+  robot_eef: 'l_laser'
+  base_link: world
 
-#GAN:
-#  training:
-#    batch_size: 1000
-#    lr: 0.0001
-#
-#  architecture:
-#    noise_vector_size: 8
-#    layers: [ 2700, 2600, 2400, 500, 430, 120, 60, 420 ]
-#    nbr_tanh: 2
-#    activation: "GELU"
+  zero_joints_goal: [ 3, 4 ]
+
+  FKNet:
+    training:
+      batch_size: 700
+      lr: 0.0001
+
+    architecture:
+      layers:  [1900, 2700, 3000, 2900, 450, 60, 10, 160]
+      nbr_tanh: 3
+      activation: "GELU"
+
+  IKNet:
+    pretrained_weights: "https://drive.google.com/uc?export=download&id=1pgben2__06Ro44q9_3_JQpof5GmUvlEB"
+
+    training:
+      batch_size: 300
+      lr: 0.0001
+
+    architecture:
+      layers:  [2200, 2400, 2400, 1900, 250, 220, 30, 380]
+      nbr_tanh: 3
+      activation: "GELU"
+
+  GAN:
+    training:
+      batch_size: 300
+      lr: 0.00019
+
+    architecture:
+      noise_vector_size: 10
+      layers: [ 1180, 1170, 2500, 1290, 700, 970, 440, 770 ]
+      nbr_tanh: 2
+      activation: "GELU"
