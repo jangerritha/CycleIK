@@ -3,6 +3,13 @@
 ## Overview
 Implementation of CycleIK - Neuro-inspired Inverse Kinematics
 
+<img src="/assets/img/_DSC0957__.JPG"  height="320"><br>*Example output of the CycleIK GAN for the Neuro-Inspired Collaborator (NICOL)*
+
+<img src="/assets/img/cycle_ik_overview.jpg"  height="320"><br>*Neuro-inspired inverse kinematics training architecture. A batch of
+poses X is inferenced by either the MLP or GAN to obtain the batch of joint angles
+Θ. The joint angles are transformed back to Cartesian space X by the FK(Θ)
+function to be evaluated by the multi-objective function under constraints L.*
+
 ### Publications
 ```
 Inverse Kinematics for Neuro-Robotic Grasping with Humanoid Embodied Agents. (2024). 
@@ -20,7 +27,6 @@ Lecture Notes in Computer Science, vol 14254.
 Arxiv: https://arxiv.org/abs/2307.11554 \
 Open Access: https://link.springer.com/chapter/10.1007/978-3-031-44207-0_38
 
-<img src="/assets/img/_DSC0957__.JPG"  height="320"><br>*Example output of the CycleIK GAN for the Neuro-Inspired Collaborator (NICOL)*
 
 ### Installation
 
@@ -78,12 +84,6 @@ In addition a GAN is available that offers exploration of the nullspace to produ
 
 ### GAN
 <img src="/assets/img/generator_gan.png"  height="320"><br>*GAN IK model optimized for NICOL robot*
-
-## Training Algorithm
-<img src="/assets/img/cycle_ik_overview.jpg"  height="320"><br>*Neuro-inspired inverse kinematics training architecture. A batch of
-poses X is inferenced by either the MLP or GAN to obtain the batch of joint angles
-Θ. The joint angles are transformed back to Cartesian space X by the FK(Θ)
-function to be evaluated by the multi-objective function under constraints L.*
 
 ### Contributing
 
