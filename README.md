@@ -59,9 +59,9 @@ control_points = np.array([np.array([0.3, -0.5, 1.2, -0.5, 0.5, 0.5, 0.5]),
                            np.array([0.6, -0.3, 1.2, -0.5, 0.5, 0.5, 0.5])])
 
 bezier_curve = cycleik.generate_cubic_bezier_trajectory(start_pose=start_pose,
-                                                              target_pose=target_pose,
-                                                              control_points=control_points,
-                                                              points=100)
+                                                        target_pose=target_pose,
+                                                        control_points=control_points,
+                                                        points=100)
 
 joint_trajectory, _, _, _ = cycleik.inverse_kinematics(bezier_curve, calculate_error=True)
 ```
