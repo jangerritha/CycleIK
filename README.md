@@ -38,16 +38,12 @@ Open Access: https://link.springer.com/chapter/10.1007/978-3-031-44207-0_38
 
 #### Clone and install requirements
 
+Best practice is to use anaconda or miniconda
+
 ```bash
 git clone -b dev https://git.informatik.uni-hamburg.de/jangerritha/cycleik.git
 cd cycleik/
 pip install -r requirements.txt
-cd ..
-git clone https://github.com/UM-ARM-Lab/pytorch_kinematics.git
-cd pytorch_kinematics
-git checkout bee97ab0d20d21145df2519b1a6db346f20f78d4
-pip install -e .
-cd ../cycleik
 pip install -e .
 ```
 
