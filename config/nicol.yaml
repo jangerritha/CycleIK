@@ -17,7 +17,7 @@ right_arm:
   robot_urdf: './assets/urdf/NICOL.urdf'
   robot_eef: 'r_laser'
   base_link: world
-  zero_joints_goal: [ 3, 4, 5]
+  #zero_joints_goal: [ 3, 4, 5]
 
   joint_name: ["r_joint1", "r_joint2", "r_joint3", "r_joint4", "r_joint5", "r_joint6", "r_joint7", "r_joint8"]
   home_js: [1.57, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
