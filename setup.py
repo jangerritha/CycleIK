@@ -14,17 +14,15 @@ setup(name='CycleIK',
           'pillow',
           'tqdm',
           'matplotlib',
-          'opencv-python==4.1.2.30; python_version<="3.8"',
-          'opencv-python; python_version>"3.8"',
-          'numpy==1.21.6; python_version<="3.8"',
-          'numpy==1.22.4; python_version>"3.8"',
+          'opencv-python',
+          'numpy',
           'torch',
           'networkx',
           'open3d',
           'torchvision',
           'gdown',
           'optuna',
-          #'pytorch_kinematics @ git+https://github.com/UM-ARM-Lab/pytorch_kinematics@bee97ab0d20d21145df2519b1a6db346f20f78d4#egg=pytorch_kinematics-0.4.0'
+          'pytorch_kinematics'
       ],
 
      )

@@ -40,22 +40,18 @@ class IKDataset(Dataset):
         with open(data_path + "/../data/" +  root + ".p", 'rb') as f:
             loaded_values = pickle.load(f)
 
-        if robot == "fetch" and len(loaded_values[0]) > 1000000:
-            with open(data_path + "/../data/" + root + "_1.p", 'rb') as f:
-                loaded_values2 = pickle.load(f)
 
-            #print(loaded_values2)
+        if mode=="train":
+            loaded_values[0] = loaded_values[0][:1000000]
+            loaded_values[1] = loaded_values[1][:1000000]
 
-        tmp_nbr_samples = 1000000 if len(loaded_values[0]) > 1000000 else len(loaded_values[0])
-        tmp_nbr_samples = 10000 if 15000 > len(loaded_values[0]) > 10000 else tmp_nbr_samples
-
-        #for i in range(tmp_nbr_samples):#len(loaded_values[0])):
-        #for i in range(1000):
-        #for i in range(tmp_nbr_samples):
-
-        if robot == "fetch" and len(loaded_values[0]) > 1000000:
-            loaded_values[0] = loaded_values[0] + loaded_values2[0]
-            loaded_values[1] = loaded_values[1] + loaded_values2[1]
+        if mode == "test":
+            loaded_values[0] = loaded_values[0][:100000]
+            loaded_values[1] = loaded_values[1][:100000]
+            # print(loaded_values2)
+        if mode == "val":
+            loaded_values[0] = loaded_values[0][:200000]
+            loaded_values[1] = loaded_values[1][:200000]
 
         for i in range(len(loaded_values[0])):
 
@@ -113,6 +109,19 @@ class IKDataset(Dataset):
         self.workspace_interval_array = workspace_interval_array
         print("Size Dataset: ", self.data_size)
 
+        #voxel_grid = o3d.geometry.VoxelGrid.create_from_point_cloud(pcd, voxel_size=0.05)
+        # Initialize a visualizer object
+        #vis = o3d.visualization.Visualizer()
+        # Create a window, name it and scale it
+        #vis.create_window(window_name='Bunny Visualize', width=800, height=600)
+
+        # Add the voxel grid to the visualizer
+        #vis.add_geometry(voxel_grid)
+
+        # We run the visualizater
+        #vis.run()
+        # Once the visualizer is closed destroy the window and clean up
+        #vis.destroy_window()
     def __getitem__(self, index):
         item_gt_A = self.ground_truth_A[index % len(self.ground_truth_A)]
         item_gt_B = self.ground_truth_B[index % len(self.ground_truth_B)]

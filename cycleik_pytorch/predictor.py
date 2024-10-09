@@ -12,11 +12,12 @@ from tqdm import tqdm
 import concurrent.futures
 from scipy.spatial.transform import Rotation as R
 import gdown
-
+from .Bezier import Bezier
+from scipy.spatial.transform import Slerp
 
 class CycleIK:
 
-    def __init__(self, robot, cuda_device=None, verbose=False, chain=""):
+    def __init__(self, robot, cuda_device=None, verbose=False, chain="", nicol_compatibility_mode=False):
         assert robot is not None and type(robot) == str, "Robot name must be set as string with valid config in path"
 
         data_path = os.path.dirname(os.path.abspath(__file__))
@@ -31,6 +32,8 @@ class CycleIK:
             os.makedirs(data_path + f"/../weights/{robot}")
         except OSError:
             pass
+
+        self.nicol_compatibility_mode = nicol_compatibility_mode
 
         self.robot = robot
         self.device_name = "cpu" if cuda_device is None else f"cuda:{cuda_device}"
@@ -63,12 +66,12 @@ class CycleIK:
                                     nbr_tanh=self.config["IKNet"]["architecture"]["nbr_tanh"],
                                     activation=self.config["IKNet"]["architecture"]["activation"],
                                     layers=self.config["IKNet"]["architecture"]["layers"]).to(self.device)
-
-        self.gan = GenericNoisyGenerator(input_size=7, output_size=self.robot_dof,
-                                      noise_vector_size=self.config["GAN"]["architecture"]["noise_vector_size"],
-                                      nbr_tanh=self.config["GAN"]["architecture"]["nbr_tanh"],
-                                      activation=self.config["GAN"]["architecture"]["activation"],
-                                      layers=self.config["GAN"]["architecture"]["layers"]).to(self.device)
+        if self.config["robot_dof"] > 6:
+            self.gan = GenericNoisyGenerator(input_size=7, output_size=self.robot_dof,
+                                          noise_vector_size=self.config["GAN"]["architecture"]["noise_vector_size"],
+                                          nbr_tanh=self.config["GAN"]["architecture"]["nbr_tanh"],
+                                          activation=self.config["GAN"]["architecture"]["activation"],
+                                          layers=self.config["GAN"]["architecture"]["layers"]).to(self.device)
 
         data_path = str(Path(__file__).parent.parent.absolute())
         try:
@@ -93,15 +96,21 @@ class CycleIK:
         except RuntimeError as e:
             print("\n\n Runtime Warning, did not load CycleIK Network weights! \n\n")
             raise e
-        try:
-            self.gan.load_state_dict(torch.load(os.path.join(data_path, "weights", str(self.robot), f"model_GAN_with_kinematics_{self.chain}.pth"), map_location=self.device))
-        except FileNotFoundError as e:
-            print("\n\n FileNotFoundError, did not load CycleIK Network weights! You probably have the wrong checkpoint name. \n\n")
-            pass
-        except RuntimeError as e:
-            print("\n\n Runtime Warning, did not load CycleIK Network weights! \n\n")
-            pass
+
         self.model.eval()
+
+        if self.config["robot_dof"] > 6:
+            try:
+                self.gan.load_state_dict(torch.load(os.path.join(data_path, "weights", str(self.robot), f"model_GAN_with_kinematics_{self.chain}.pth"), map_location=self.device))
+            except FileNotFoundError as e:
+                #print("\n\n FileNotFoundError, did not load CycleIK Network weights! You probably have the wrong checkpoint name. \n\n")
+                pass
+            except RuntimeError as e:
+                #print("\n\n Runtime Warning, did not load CycleIK Network weights! \n\n")
+                pass
+            self.gan.eval()
+
+
 
         urdf_path = os.path.join(data_path, self.robot_urdf)
         chain = pk.build_serial_chain_from_urdf(open(urdf_path).read(), self.robot_eef)
@@ -176,6 +185,9 @@ class CycleIK:
 
             error = torch.abs(torch.concat((torch.subtract(forward_result[:, :3], unnormalized_poses[:, :3]), torch.Tensor(rotation_diff).to(self.device)), dim=1)).detach().cpu().numpy()
 
+        if self.nicol_compatibility_mode:
+            js_result[:, 6:8] *= 4
+
         js_result = js_result.detach().cpu().numpy()
 
         if self.verbose:
@@ -187,7 +199,7 @@ class CycleIK:
         return js_result, error, elapsed_time_ik, elapsed_time_fk
 
     @torch.no_grad()
-    def inverse_kinematics_distribution(self, pose: np.ndarray, js_samples = 1000, calculate_error=False):
+    def inverse_kinematics_distribution_old(self, pose: np.ndarray, js_samples = 1000, calculate_error=False):
         st = time.time()
         noise_vector_size = self.config["GAN"]["architecture"]["noise_vector_size"]
         pose = torch.Tensor(pose).reshape((1, 7)).to(self.device)
@@ -255,9 +267,108 @@ class CycleIK:
         return js_result, error, elapsed_time_ik, elapsed_time_fk
 
     @torch.no_grad()
+    def inverse_kinematics_distribution(self, pose: np.ndarray, noise: np.ndarray, js_samples=1000, calculate_error=False):
+        assert len(pose.shape) == 2, "Input pose to inverse_kinematics_distribution() function should have shape (batch_size, 7)"
+
+        noise_vector_size = self.config["GAN"]["architecture"]["noise_vector_size"]
+
+        assert len(noise.shape) == 2, "Input noise to inverse_kinematics_distribution() function should have shape (batch_size, noise_vector_size). Look up the noise_vector_size in the config"
+
+        assert noise.shape[1] == noise_vector_size, "noise vectors in the noise batch should have shape (batch_size, noise_vector_size). Look up the noise_vector_size in the config"
+
+        assert len(noise) == len(pose), "mismatch between batch_size of pose and noise input"
+
+        pose = torch.Tensor(pose).to(self.device)
+        noise = torch.Tensor(noise).to(self.device)
+
+        pose = normalize_pose(pose, batch_size=len(pose), workspace_move=self.workspace_center_array,
+                              workspace_renormalize=self.workspace_interval_array, slice_pk_result=False)
+
+        js_result = self.gan(noise, pose)
+        js_result = renormalize_joint_state(js_result, batch_size=len(js_result),
+                                            single_renormalize_move=self.normalize_center_array,
+                                            single_renormalize=self.normalize_interval_array)
+        # js_result = torch.mul(js_result, self.normalize_interval_array.repeat(bs, 1))
+        # js_result = torch.add(js_result, self.normalize_center_array.repeat(bs, 1))
+
+        return js_result
+
+    @torch.no_grad()
     def forward_kinematics(self, joint_states: np.ndarray):
         joint_states = torch.Tensor(joint_states).to(self.device)
         bs = len(joint_states)
         pose_for_js = self.chain.forward_kinematics(joint_states)
         forward_result = slice_fk_pose(pose_for_js, bs)
         return forward_result.detach().cpu().numpy()
+
+    @staticmethod
+    def generate_cubic_bezier_trajectory(start_pose=None, target_pose=None, control_points=[], points=100):
+        t_step = np.divide(1, points)
+        points_set = np.empty((2 + len(control_points), 3))
+        points_set[0] = start_pose[:3]
+        for e, control_point in enumerate(control_points):
+            #print(control_point[e])
+            points_set[e + 1] = control_point[:3]
+        points_set[-1] = target_pose[:3]
+        t_points = np.arange(0, 1, t_step)
+        t_points = np.concatenate((t_points, np.array([1.0])), axis=0)
+
+        print(f' t_point: {t_points}')
+
+        #print(points_set)
+        curve = Bezier.Curve(t_points, points_set)
+        #print(curve)
+
+        diff_start_end_rotation = np.abs(np.subtract(target_pose[3:], start_pose[3:]))
+        print(diff_start_end_rotation)
+        end_diff = False
+        for quat_val in diff_start_end_rotation:
+            if quat_val > 0.03:
+                end_diff = True
+        
+        print(f'orientation diff?: {end_diff}')
+
+        #positive_difference = np.sum(np.abs(np.subtract(target_pose[3:], start_pose[3:])), axis=0)
+        #negative_difference = np.sum(np.abs(np.subtract(-target_pose[3:], start_pose[3:])), axis=0)
+
+        #if positive_difference > negative_difference:
+        #    target_pose[3:] = -target_pose[3:]
+
+        if control_points.shape[1] == 7 or (end_diff):
+            key_rots = []
+            key_rots.append(start_pose[3:])
+            if control_points.shape[1] == 7:
+                for control_rot in control_points:
+                    key_rots.append(control_rot[3:])
+            key_rots.append(target_pose[3:])
+
+            print(f'ctrl points shape: {control_points.shape}')
+            print(f'key rots: {key_rots}')
+
+            #key_rots = np.array(key_rots)
+
+            if control_points.shape[1] == 7:
+                print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n\n\n')
+                key_times = list(np.arange(0, 1, (1 / (len(key_rots) - 1))))
+                key_times.append(1)
+                print(key_times)
+            else:
+                key_times = [0, 1]
+
+            key_rots = R.from_quat(key_rots)
+
+            slerp = Slerp(key_times, key_rots)
+
+            interp_rots = slerp(list(t_points))
+            interp_rots = np.array(list(interp_rots.as_quat()))
+        else:
+            fixed_rot = np.zeros((1, 4))
+            fixed_rot[0] = target_pose[3:]
+            interp_rots = np.repeat(fixed_rot, len(curve), axis=0)
+
+        #print(interp_rots)
+        res_curve = np.concatenate((np.array(curve), np.array(interp_rots)), axis=1)
+        print(res_curve)
+        return res_curve
+        
+

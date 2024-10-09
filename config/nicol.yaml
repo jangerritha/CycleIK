@@ -1,8 +1,8 @@
 right_arm:
 
   train_data: 'results_nicol_1400_5'
-  test_data: 'results_nicol_14_5'
-  val_data: 'results_nicol_140_5'
+  test_data: 'results_nicol_140_5'
+  val_data: 'results_nicol_200_5'
 
   robot_dof: 8
   limits:
@@ -17,45 +17,48 @@ right_arm:
   robot_urdf: './assets/urdf/NICOL.urdf'
   robot_eef: 'r_laser'
   base_link: world
-  zero_joints_goal: [ 3, 4 ]
+  zero_joints_goal: [ 3, 4, 5]
+
+  joint_name: ["r_joint1", "r_joint2", "r_joint3", "r_joint4", "r_joint5", "r_joint6", "r_joint7", "r_joint8"]
+  home_js: [1.57, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+  move_group: 'r_arm'
+
+  debug:
+    pose: [0.5, -0.2, 1.0, 0., 0., 0.75, 0.75]
+    axis: 'Y'
+    points: 15
+    null_space_samples: 30
 
   FKNet:
     training:
-      batch_size: 700
-      lr: 0.0001
+      batch_size: 150
+      lr: 0.00051
 
     architecture:
-      layers: [ 1900, 2700, 3000, 2900, 450, 60, 10, 160 ]
-      nbr_tanh: 3
+      layers: [ 3410, 2210, 2790, 2750, 1570, 1320, 1340, 340, 1990]
+      nbr_tanh: 1
       activation: "GELU"
 
   IKNet:
     pretrained_weights: "https://drive.google.com/uc?export=download&id=1oSFayrzvXtVsbzSp7HS8vVJ83EL2-Ggn"
 
+    position_weight: 9.
+    orientation_weight: 2.
+    zero_controller_weight: 2.
+
     training:
-      batch_size: 300
-      lr: 0.0001
+      batch_size: 100
+      lr: 0.00018
 
     architecture:
-      layers: [ 2200, 2400, 2400, 1900, 250, 220, 30, 380 ]
-      nbr_tanh: 3
-      activation: "GELU"
-
-  GAN:
-    training:
-      batch_size: 300
-      lr: 0.00019
-
-    architecture:
-      noise_vector_size: 10
-      layers: [ 1180, 1170, 2500, 1290, 700, 970, 440, 770 ]
-      nbr_tanh: 2
+      layers: [ 2780, 3480, 1710, 2880, 1750, 1090, 1470 ]
+      nbr_tanh: 1
       activation: "GELU"
 
 left_arm:
 
   train_data: 'results_nicol_1400_left'
-  test_data: 'results_nicol_14_left'
+  test_data: 'results_nicol_140_left'
   val_data: 'results_nicol_140_left'
 
   robot_dof: 8
@@ -64,15 +67,15 @@ left_arm:
     lower: [-2.5, -1.5, -2.25, -2.9, -1.570796, -3.141592, -0.785398, -0.785398]
 
   workspace:
-    upper: [0.8374, 0.9, 1.4]
-    lower: [0.2, -0.4598, 0.8]
+    upper: [0.848, 0.9, 1.4]
+    lower: [0.2, -0.4781, 0.8]
 
 
   robot_urdf: './assets/urdf/NICOL.urdf'
   robot_eef: 'l_laser'
   base_link: world
 
-  zero_joints_goal: [ 3, 4 ]
+  zero_joints_goal: [3, 4, 5]
 
   FKNet:
     training:
@@ -87,22 +90,16 @@ left_arm:
   IKNet:
     pretrained_weights: "https://drive.google.com/uc?export=download&id=1pgben2__06Ro44q9_3_JQpof5GmUvlEB"
 
+    position_weight: 9.
+    orientation_weight: 2.
+    zero_controller_weight: [5000., 200., 5000.]
+    #zero_controller_weight: 1000.
+
     training:
-      batch_size: 300
-      lr: 0.0001
+      batch_size: 100
+      lr: 0.00018
 
     architecture:
-      layers:  [2200, 2400, 2400, 1900, 250, 220, 30, 380]
-      nbr_tanh: 3
-      activation: "GELU"
-
-  GAN:
-    training:
-      batch_size: 300
-      lr: 0.00019
-
-    architecture:
-      noise_vector_size: 10
-      layers: [ 1180, 1170, 2500, 1290, 700, 970, 440, 770 ]
-      nbr_tanh: 2
+      layers: [ 2780, 3480, 1710, 2880, 1750, 1090, 1470 ]
+      nbr_tanh: 1
       activation: "GELU"

@@ -164,3 +164,14 @@ def renormalize_pose(pose, batch_size, workspace_move, workspace_renormalize):
     pose[:, :3] = torch.mul(pose[:, :3], workspace_renormalize.repeat(batch_size, 1))
     pose[:, :3] = torch.subtract(pose[:, :3], workspace_move.repeat(batch_size, 1))
     return pose
+
+
+class JSD(torch.nn.Module):
+    def __init__(self):
+        super(JSD, self).__init__()
+        self.kl = torch.nn.KLDivLoss(reduction='batchmean', log_target=True)
+
+    def forward(self, p: torch.tensor, q: torch.tensor):
+        p, q = p.view(-1, p.size(-1)), q.view(-1, q.size(-1))
+        m = (0.5 * (p + q)).log()
+        return 0.5 * (self.kl(m, p.log()) + self.kl(m, q.log()))

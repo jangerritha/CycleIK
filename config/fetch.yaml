@@ -1,0 +1,47 @@
+arm:
+  train_data: 'results_fetch_5000_3'
+  test_data: 'results_fetch_100_3'
+  val_data: 'results_fetch_200_3'
+
+  robot_dof: 8
+  limits:
+    upper: [0.38615, 1.6056, 1.518, 3.14159, 2.251, 3.14159, 2.16, 3.14159]
+    lower: [0., -1.6056, -1.221, -3.14159, -2.251, -3.14159, -2.16, -3.14159]
+  workspace:
+    upper: [0.962, 0.929, 1.959]
+    lower: [-0.44, -0.929, -0.03]
+
+  robot_urdf: './assets/urdf/fetch.urdf'
+  robot_eef: 'wrist_roll_link'
+  base_link: 'base_link'
+
+  joint_name: [ "torso_lift_joint", "shoulder_pan_joint", "shoulder_lift_joint", "upperarm_roll_joint",
+                "elbow_flex_joint", "forearm_roll_joint", "wrist_flex_joint", "wrist_roll_joint" ]
+  home_js: [ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 ]
+  move_group: 'arm_with_torso'
+
+  #zero_joints_goal: [0]
+
+  IKNet:
+
+    position_weight: 19.
+    orientation_weight: 3.
+
+    training:
+      batch_size: 100
+      lr: 0.00032
+
+    architecture:
+      layers: [850, 620, 3210, 2680, 680, 3030, 2670]
+      nbr_tanh: 1
+      activation: "GELU"
+
+  FKNet:
+    training:
+      batch_size: 700
+      lr: 0.0001
+
+    architecture:
+      layers:  [1900, 2700, 3000, 2900, 450, 60, 10, 160]
+      nbr_tanh: 3
+      activation: "GELU"

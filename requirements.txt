@@ -9,3 +9,4 @@ open3d
 torchvision
 gdown
 optuna
+pytorch_kinematics
