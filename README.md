@@ -8,19 +8,17 @@ Implementation of CycleIK - Neuro-inspired Inverse Kinematics
 Inverse Kinematics for Neuro-Robotic Grasping with Humanoid Embodied Agents. (2024). 
 Habekost, JG., Strahl, E., Allgeuer, P., Kerzel, M., Wermter, S. 
 Accepted at IROS 2024.
-
-Arxiv: https://arxiv.org/html/2404.08825
 ```
+Arxiv: https://arxiv.org/html/2404.08825
 
 ```
 CycleIK: Neuro-inspired Inverse Kinematics. (2023). 
 Habekost, JG., Strahl, E., Allgeuer, P., Kerzel, M., Wermter, S. 
 In: Artificial Neural Networks and Machine Learning – ICANN 2023. 
 Lecture Notes in Computer Science, vol 14254. 
-
-Arxiv: https://arxiv.org/abs/2307.11554
-Open Access: https://link.springer.com/chapter/10.1007/978-3-031-44207-0_38
 ```
+Arxiv: https://arxiv.org/abs/2307.11554 \
+Open Access: https://link.springer.com/chapter/10.1007/978-3-031-44207-0_38
 
 <img src="/assets/img/example_GAN_nicol.png"  height="320"><br>*Example output of the CycleIK GAN for the Neuro-Inspired Collaborator (NICOL)*
 
