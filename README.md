@@ -3,7 +3,9 @@
 ## Overview
 <p align="center">
 Implementation of CycleIK - Neuro-inspired Inverse Kinematics
+</p>
 
+<p align="center">
 <img src="/assets/img/_DSC0957__.JPG"  height="320"><br>Example output of the CycleIK GAN for the Neuro-Inspired Collaborator (NICOL)
 </p>
 
