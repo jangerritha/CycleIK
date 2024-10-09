@@ -1,13 +1,12 @@
 # CycleIK
 
 ## Overview
-<p align="center">
 Implementation of CycleIK - Neuro-inspired Inverse Kinematics
-
+<p align="center">
 <img src="/assets/img/_DSC0957__.JPG"  height="320"><br>Example output of the CycleIK GAN for the Neuro-Inspired Collaborator (NICOL)
+</p>
 
-
-
+<p align="center">
 <img src="/assets/img/cycle_ik_overview.jpg"  height="320"><br>Neuro-inspired inverse kinematics training architecture. A batch of
 poses X is inferenced by either the MLP or GAN to obtain the batch of joint angles
 Θ. The joint angles are transformed back to Cartesian space X by the FK(Θ)
