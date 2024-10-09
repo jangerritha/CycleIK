@@ -20,11 +20,7 @@ Lecture Notes in Computer Science, vol 14254.
 Arxiv: https://arxiv.org/abs/2307.11554 \
 Open Access: https://link.springer.com/chapter/10.1007/978-3-031-44207-0_38
 
-<img src="/assets/img/example_GAN_nicol.png"  height="320"><br>*Example output of the CycleIK GAN for the Neuro-Inspired Collaborator (NICOL)*
-
-## Hybrid Neuro-Genetic IK Pipeline
-<img src="/assets/img/cycleik_ik_pipeline.jpg"  height="320"><br>*Hybrid neuro-genetic IK pipeline. The neural solutions for pose X can
-optionally be optimized with the Gaikpy GA and SLSQP, given the constraints L.*
+<img src="/assets/img/_DSC0957__.png"  height="320"><br>*Example output of the CycleIK GAN for the Neuro-Inspired Collaborator (NICOL)*
 
 ### Installation
 
