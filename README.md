@@ -46,53 +46,85 @@ cd cycleik/
 pip install -r requirements.txt
 pip install -e .
 ```
-
-#### Download pretrained weights
+### Usage
 
 ```bash
+cycleik = CycleIK(robot="nicol", cuda_device='0', verbose=True, chain="right_arm")
 
+start_pose = np.array([0.3, -0.5, 0.99, 0.0015305, 0.0009334, 0.70713, 0.70708])
+
+target_pose = np.array([0.6, -0.3, 0.895, -0.5, 0.5, 0.5, 0.5])
+
+control_points = np.array([np.array([0.3, -0.5, 1.2, -0.5, 0.5, 0.5, 0.5]),
+                           np.array([0.6, -0.3, 1.2, -0.5, 0.5, 0.5, 0.5])])
+
+bezier_curve = cycleik.generate_cubic_bezier_trajectory(start_pose=start_pose,
+                                                              target_pose=target_pose,
+                                                              control_points=control_points,
+                                                              points=100)
+
+joint_trajectory, _, _, _ = cycleik.inverse_kinematics(bezier_curve, calculate_error=True)
 ```
+
+
+### Test
+The MLP network can be tested with the following command, remove the `--cuda` flag incase you are running a CPU-only system.
+
+Exchange `<robot>` by one of the following options: `nicol, nico, fetch, panda, or valkyrie`.
+
+The `<chain>` tag refers to the kinematic chain that is selected for evaluation. \
+Must match one of the move groups in the config yaml of the corresponding robot.
+
+```bash
+python test.py --cuda --robot <robot> --chain <chain> --network MLP 
+```
+
+#### Example
+```bash
+python test.py --cuda --robot nicol --chain right_arm --network MLP 
+```
+#### Download pretrained weights
+
+Pre-trained weights are available for each of the five robot platforms on which CycleIK was evaluated.
+
+
+```bash
+cd <path_to_repo_location>
+mkdir weights/<robot>
+cd weights
+mkdir <robot>
+```
+
+You can download a zip that contains all pre-trained weights from [here](https://drive.google.com/file/d/1SdZVdi4KtpBleBPvAcVP9s_GOpJ6zcOt/view?usp=sharing).
+
+### Train
+The training is executed very similar to running the tests.
+
+```bash
+python train.py --cuda --robot <robot> --chain <chain> --network MLP --epochs 10
+```
+
+#### Example
+```bash
+python train.py --cuda --robot nicol --chain right_arm --network MLP --epochs 10
+```
+
 
 #### Download dataset
 
-```bash
-
-```
-
-### Test
-
-The following commands can be used to test the whole test.
+For every robot there is a `train, test, and validation` dataset. Every dataset is delivered in a single file and must be added under `<path_to_repo_location>/data`.
 
 ```bash
-
+cd <path_to_repo_location>
+mkdir data
 ```
 
-For single image processing, use the following command.
-
-```bash
-
-```
+You can download a zip that contains all datasets used for our publication from [here](https://drive.google.com/file/d/1wc-YI9v0aEh0V0k5YqABckaJdNRqnNy7/view?usp=sharing).
 
 
-### Train
 
 
-## Model Description
-Two neuro-inspired IK models are available. An MLP that deterministically returns a single solution to a single IK query. 
-In addition a GAN is available that offers exploration of the nullspace to produce multiple solutions for a single IK query.
-
-### MLP
-<img src="/assets/img/generator.png"  height="320"><br>*MLP IK model optimized for NICOL robot*
-
-### GAN
-<img src="/assets/img/generator_gan.png"  height="320"><br>*GAN IK model optimized for NICOL robot*
 
 ### Contributing
 
-If you find a bug, create a GitHub issue, or even better, submit a pull request. Similarly, if you have questions, simply post them as GitHub issues.   
-
-I look forward to seeing what the community does with these models! 
-
-### Credit
-
-
+If you find a bug, create a GitHub issue, or even better, submit a pull request. Similarly, if you have questions, simply post them as GitHub issues.

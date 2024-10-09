@@ -109,9 +109,9 @@ class MLPTrainer(BaseTrainer):
         real_B = data["real_B"].to(self.device)
         bs = len(gt_B)
 
-        #if i % 2 == 0:
-        #    gt_B[:, 3:] = -gt_B[:, 3:]
-        #    #real_B[:, 3:] = -real_B[:, 3:]
+        if i % 2 == 0:
+            gt_B[:, 3:] = -gt_B[:, 3:]
+            #real_B[:, 3:] = -real_B[:, 3:]
 
         cycle_loss_A2B_position = None
         cycle_loss_A2B_orientation = None
