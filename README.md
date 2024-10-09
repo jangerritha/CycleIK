@@ -1,11 +1,26 @@
 # CycleIK
 
 ## Overview
-Implementation of CycleIK 
+Implementation of CycleIK - Neuro-inspired Inverse Kinematics
 
-Paper: https://arxiv.org/abs/2307.11554
+### Publications
+```
+Inverse Kinematics for Neuro-Robotic Grasping with Humanoid Embodied Agents. (2024). 
+Habekost, JG., Strahl, E., Allgeuer, P., Kerzel, M., Wermter, S. 
+Accepted at IROS 2024.
 
-Accepted at ICANN 23 (32nd International Conference on Artificial Neural Networks)
+Arxiv: https://arxiv.org/html/2404.08825
+```
+
+```
+CycleIK: Neuro-inspired Inverse Kinematics. (2023). 
+Habekost, JG., Strahl, E., Allgeuer, P., Kerzel, M., Wermter, S. 
+In: Artificial Neural Networks and Machine Learning – ICANN 2023. 
+Lecture Notes in Computer Science, vol 14254. 
+
+Arxiv: https://arxiv.org/abs/2307.11554
+Open Access: https://link.springer.com/chapter/10.1007/978-3-031-44207-0_38
+```
 
 <img src="/assets/img/example_GAN_nicol.png"  height="320"><br>*Example output of the CycleIK GAN for the Neuro-Inspired Collaborator (NICOL)*
 
@@ -59,45 +74,6 @@ For single image processing, use the following command.
 
 ### Train
 
-```text
-usage: train.py [-h] [--dataroot DATAROOT] [--dataset DATASET] [--epochs N]
-                [--decay_epochs DECAY_EPOCHS] [-b N] [--lr LR] [-p N] [--cuda]
-                [--netG_A2B NETG_A2B] [--netG_B2A NETG_B2A] [--netD_A NETD_A]
-                [--netD_B NETD_B] [--image-size IMAGE_SIZE] [--outf OUTF]
-                [--manualSeed MANUALSEED]
-
-PyTorch implements `Unpaired Image-to-Image Translation using Cycle-Consistent
-Adversarial Networks`
-
-optional arguments:
-  -h, --help            show this help message and exit
-  --dataroot DATAROOT   path to datasets. (default:./data)
-  --dataset DATASET     dataset name. (default:`horse2zebra`)Option:
-                        [apple2orange, summer2winter_yosemite, horse2zebra,
-                        monet2photo, cezanne2photo, ukiyoe2photo,
-                        vangogh2photo, maps, facades, selfie2anime,
-                        iphone2dslr_flower, ae_photos, ]
-  --epochs N            number of total epochs to run
-  --decay_epochs DECAY_EPOCHS
-                        epoch to start linearly decaying the learning rate to
-                        0. (default:100)
-  -b N, --batch-size N  mini-batch size (default: 1), this is the total batch
-                        size of all GPUs on the current node when using Data
-                        Parallel or Distributed Data Parallel
-  --lr LR               learning rate. (default:0.0002)
-  -p N, --print-freq N  print frequency. (default:100)
-  --cuda                Enables cuda
-  --netG_A2B NETG_A2B   path to netG_A2B (to continue training)
-  --netG_B2A NETG_B2A   path to netG_B2A (to continue training)
-  --netD_A NETD_A       path to netD_A (to continue training)
-  --netD_B NETD_B       path to netD_B (to continue training)
-  --image-size IMAGE_SIZE
-                        size of the data crop (squared assumed). (default:256)
-  --outf OUTF           folder to output images. (default:`./outputs`).
-  --manualSeed MANUALSEED
-                        Seed for initializing training. (default:none)
-
-```
 
 ## Model Description
 Two neuro-inspired IK models are available. An MLP that deterministically returns a single solution to a single IK query. 
