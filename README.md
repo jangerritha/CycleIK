@@ -20,7 +20,7 @@ Lecture Notes in Computer Science, vol 14254.
 Arxiv: https://arxiv.org/abs/2307.11554 \
 Open Access: https://link.springer.com/chapter/10.1007/978-3-031-44207-0_38
 
-<img src="/assets/img/_DSC0957__.png"  height="320"><br>*Example output of the CycleIK GAN for the Neuro-Inspired Collaborator (NICOL)*
+<img src="/assets/img/_DSC0957__.JPG"  height="320"><br>*Example output of the CycleIK GAN for the Neuro-Inspired Collaborator (NICOL)*
 
 ### Installation
 
