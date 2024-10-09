@@ -28,7 +28,7 @@ Arxiv: https://arxiv.org/html/2404.08825
 CycleIK: Neuro-inspired Inverse Kinematics. (2023). 
 Habekost, JG., Strahl, E., Allgeuer, P., Kerzel, M., Wermter, S. 
 In: Artificial Neural Networks and Machine Learning – ICANN 2023. 
-Lecture Notes in Computer Science, vol 14254. 
+Lecture Notes in Computer Science, vol. 14254, pp. 457-470. 
 ```
 Arxiv: https://arxiv.org/abs/2307.11554 \
 Open Access: https://link.springer.com/chapter/10.1007/978-3-031-44207-0_38
