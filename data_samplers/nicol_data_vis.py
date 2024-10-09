@@ -1,5 +1,3 @@
-# Copyright (c) 2023. Jan-Gerrit Habekost. GNU General Public License https://www.gnu.org/licenses/gpl-3.0.html.
-
 #!/usr/bin/env python
 from unittest import result
 import numpy as np

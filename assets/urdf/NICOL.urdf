@@ -76,6 +76,9 @@
 <!--    right_camera_name:      Only required for the "robot_base_macro". The name for the right eye camera link name -->
 <!--                            appearing in the tf-tree and used as camera topic namespace. -->
 <!--    fps:                    Only required for the "robot_base_macro". The publish rate of the eye image messages. -->
+<!--    use_effort_controllers: Uses the effort_controllers/joint_position_controller ros plugin (receives joint position command,
+                                sends joint effort) for PID motor control. If false, the position_controllers/joint_position_controller 
+                                plugin is used (internally forwards the joint position command).-->
 <robot name="NICOL">
   <!-- finger infixes -->
   <!-- finger indices -->
@@ -106,6 +109,7 @@
   <!-- link collision geometry values  -->
   <!-- mesh files -->
   <!-- colors -->
+  <!-- joint specifications -->
   <!-- inertial constants represented by macros -->
   <!-- link collision geometry values  -->
   <!-- mesh files -->
@@ -219,7 +223,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/robot_frame/holder_with_socket_centered.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/robot_frame/holder_with_socket_centered.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="silver"/>
     </visual>
@@ -274,7 +278,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/robot_frame/camera_holder_centered.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/robot_frame/camera_holder_centered.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="silver"/>
     </visual>
@@ -304,7 +308,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/camera/Intel_RealSense_Depth_Camera_D435_centered.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/camera/Intel_RealSense_Depth_Camera_D435_centered.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="profile"/>
     </visual>
@@ -554,7 +558,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/robot_frame/robot_frame_centered.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/robot_frame/robot_frame_centered.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="silver"/>
     </visual>
@@ -720,7 +724,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/robot_frame/plate_centered.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/robot_frame/plate_centered.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="white"/>
     </visual>
@@ -871,7 +875,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/head/cplt_neck_asmbly.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/head/cplt_neck_asmbly.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="grey"/>
     </visual>
@@ -886,12 +890,12 @@
   <!-- NICOL link  -->
   <!-- NICOL revolute joint -->
   <joint name="joint_head_z" type="revolute">
-    <origin rpy="0 0 0" xyz="0.190 0 0.138"/>
+    <origin rpy="0 0 0" xyz="0.187 -0.001 0.1415"/>
     <parent link="neck_link"/>
     <child link="tilt_link"/>
     <axis xyz="0 0 1"/>
-    <limit effort="30" lower="-3.141592653589793" upper="3.141592653589793" velocity="1.0"/>
-    <dynamics damping="0.01" friction="0"/>
+    <limit effort="120" lower="-1.5707963267948966" upper="1.5707963267948966" velocity="20"/>
+    <dynamics damping="0.01" friction="0.001"/>
   </joint>
   <transmission name="tran__head_z">
     <type>transmission_interface/SimpleTransmission</type>
@@ -912,9 +916,9 @@
       <inertia ixx="0.00009713" ixy="0" ixz="0.00000006" iyy="0.00008905" iyz="0.00000163" izz="0.00003278"/>
     </inertial>
     <visual>
-      <origin rpy="0 0 0" xyz="0.0085 0 0"/>
+      <origin rpy="0 0 0" xyz="0.007 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/head/tilt_asmbly.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/head/tilt_asmbly.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="grey"/>
     </visual>
@@ -929,12 +933,12 @@
   <!-- NICOL link  -->
   <!-- NICOL revolute joint -->
   <joint name="joint_head_y" type="revolute">
-    <origin rpy="0 0 0" xyz="0.0085 0 0.061"/>
+    <origin rpy="0 0 0" xyz="0.007 0 0.0605"/>
     <parent link="tilt_link"/>
     <child link="face_link"/>
-    <axis xyz="0 -1 0"/>
-    <limit effort="30" lower="-3.141592653589793" upper="3.141592653589793" velocity="1.0"/>
-    <dynamics damping="0.01" friction="0"/>
+    <axis xyz="0 1 0"/>
+    <limit effort="44.7" lower="-0.583" upper="1.282" velocity="6.5"/>
+    <dynamics damping="0.01" friction="0.001"/>
   </joint>
   <transmission name="tran__head_y">
     <type>transmission_interface/SimpleTransmission</type>
@@ -955,9 +959,9 @@
       <inertia ixx="0.00367200" ixy="0.00001037" ixz="-0.00004273" iyy="0.00323317" iyz="-0.00001705" izz="0.00278485"/>
     </inertial>
     <visual>
-      <origin rpy="0 0 0" xyz="-0.0035 0 0.0025"/>
+      <origin rpy="0 0 0" xyz="-0.001 0 0.001"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/head/high_res/NICOL_1x3_centered.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/head/high_res/NICOL_1x3_centered.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="white"/>
     </visual>
@@ -972,7 +976,7 @@
   <!-- NICOL link  -->
   <!-- NICOL fixed joint -->
   <joint name="joint_occiput" type="fixed">
-    <origin rpy="0 0 0" xyz="-0.008 0 0.0325"/>
+    <origin rpy="0 0 0" xyz="0 0 0.032"/>
     <parent link="face_link"/>
     <child link="occiput_link"/>
   </joint>
@@ -987,7 +991,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/head/occiput_1x3_centered.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/head/occiput_1x3_centered.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="black"/>
     </visual>
@@ -1002,7 +1006,7 @@
   <!-- NICOL link  -->
   <!-- NICOL fixed joint -->
   <joint name="joint_left_eye" type="fixed">
-    <origin rpy="0 0 0" xyz="0.1085 0.0466 0.100"/>
+    <origin rpy="0 0 0" xyz="0.111 0.0465 0.0985"/>
     <parent link="face_link"/>
     <child link="left_eye_link"/>
   </joint>
@@ -1017,7 +1021,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/head/BF10M10526S132C_centered.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/head/BF10M10526S132C_centered.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="profile"/>
     </visual>
@@ -1041,7 +1045,7 @@
   <link name="left_eye_cam"/>
   <!-- NICOL fixed joint -->
   <joint name="joint_right_eye" type="fixed">
-    <origin rpy="0 0 0" xyz="0.1085 -0.0466 0.100"/>
+    <origin rpy="0 0 0" xyz="0.111 -0.0465 0.0985"/>
     <parent link="face_link"/>
     <child link="right_eye_link"/>
   </joint>
@@ -1056,7 +1060,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/head/BF10M10526S132C_centered.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/head/BF10M10526S132C_centered.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="profile"/>
     </visual>
@@ -1080,18 +1084,19 @@
   <link name="right_eye_cam"/>
   <!-- NICOL fixed joint -->
   <joint name="joint_head_tool0" type="fixed">
-    <origin rpy="0 0 0" xyz="0.0 0.0 0.0975"/>
+    <origin rpy="0 0 0" xyz="0.0 0.0 0.100"/>
     <parent link="face_link"/>
     <child link="head_tool0_link"/>
   </joint>
   <!-- NICOL fixed joint -->
   <!-- NICOL fixed joint -->
   <joint name="joint_head_tool1" type="fixed">
-    <origin rpy="0 0 0" xyz="0.224 0.0 0.0975"/>
+    <origin rpy="0 0 0" xyz="0.22 0.0 0.100"/>
     <parent link="face_link"/>
     <child link="head_tool1_link"/>
   </joint>
   <!-- NICOL fixed joint -->
+  <!-- Empty link for camera transform -->
   <link name="head_tool0_link"/>
   <link name="head_tool1_link"/>
   <!-- append head -->
@@ -1166,7 +1171,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/open_manipulator/link_1_reduced.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/open_manipulator/link_1_reduced.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="grey"/>
     </visual>
@@ -1209,7 +1214,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/open_manipulator/link_2_reduced.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/open_manipulator/link_2_reduced.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="grey"/>
     </visual>
@@ -1252,7 +1257,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/open_manipulator/link_3_reduced.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/open_manipulator/link_3_reduced.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="grey"/>
     </visual>
@@ -1260,7 +1265,7 @@
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <!-- use same mesh as for vis -->
-        <mesh filename="/meshes/nicol_meshes/open_manipulator/link_3_reduced.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/open_manipulator/link_3_reduced.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>
@@ -1295,7 +1300,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/open_manipulator/link_4_reduced.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/open_manipulator/link_4_reduced.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="grey"/>
     </visual>
@@ -1303,7 +1308,7 @@
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <!-- use same mesh as for vis -->
-        <mesh filename="/meshes/nicol_meshes/open_manipulator/link_4_reduced.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/open_manipulator/link_4_reduced.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>
@@ -1338,7 +1343,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/open_manipulator/link_5_reduced.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/open_manipulator/link_5_reduced.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="grey"/>
     </visual>
@@ -1381,7 +1386,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/open_manipulator/link_6_reduced.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/open_manipulator/link_6_reduced.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="grey"/>
     </visual>
@@ -1389,7 +1394,7 @@
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <!-- use same mesh as for vis -->
-        <mesh filename="/meshes/nicol_meshes/open_manipulator/link_6_reduced.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/open_manipulator/link_6_reduced.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>
@@ -1634,7 +1639,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/RH8D/forearm_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/forearm_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="rh8d_color"/>
     </visual>
@@ -1642,7 +1647,7 @@
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <!-- use same mesh as for vis -->
-        <mesh filename="/meshes/nicol_meshes/RH8D/forearm_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/forearm_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>
@@ -1653,7 +1658,7 @@
     <parent link="r_forearm"/>
     <child link="r_palm_axis"/>
     <axis xyz="0 0 1"/>
-    <limit effort="0.5" lower="-0.7853981633974483" upper="0.7853981633974483" velocity="1.0"/>
+    <limit effort="50" lower="-0.7853981633974483" upper="0.7853981633974483" velocity="10.0"/>
     <dynamics damping="0.0001" friction="0"/>
   </joint>
   <transmission name="tran_r_7">
@@ -1677,7 +1682,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/RH8D/palm_axis_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/palm_axis_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="rh8d_color"/>
     </visual>
@@ -1685,7 +1690,7 @@
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <!-- use same mesh as for vis -->
-        <mesh filename="/meshes/nicol_meshes/RH8D/palm_axis_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/palm_axis_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>
@@ -1696,7 +1701,7 @@
     <parent link="r_palm_axis"/>
     <child link="r_palm"/>
     <axis xyz="0 0 1"/>
-    <limit effort="0.5" lower="-0.7853981633974483" upper="0.7853981633974483" velocity="1.0"/>
+    <limit effort="50" lower="-0.7853981633974483" upper="0.7853981633974483" velocity="10.0"/>
     <dynamics damping="0.0001" friction="0"/>
   </joint>
   <transmission name="tran_r_8">
@@ -1721,7 +1726,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/RH8D/high_res/right_palm_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/high_res/right_palm_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="rh8d_color"/>
     </visual>
@@ -1729,7 +1734,7 @@
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <!-- use same mesh as for vis -->
-        <mesh filename="/meshes/nicol_meshes/RH8D/high_res/right_palm_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/high_res/right_palm_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>
@@ -1758,7 +1763,7 @@
     <parent link="r_palm"/>
     <child link="r_thumb_base"/>
     <axis xyz="0 0 -1"/>
-    <limit effort="0.5" lower="0.0" upper="1.5707963267948966" velocity="1.0"/>
+    <limit effort="50" lower="0.0" upper="1.5707963267948966" velocity="10.0"/>
     <dynamics damping="0.0001" friction="0"/>
   </joint>
   <transmission name="tran_r_T0">
@@ -1782,7 +1787,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/RH8D/thumb_base_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/thumb_base_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="rh8d_color"/>
     </visual>
@@ -1801,7 +1806,7 @@
     <parent link="r_thumb_base"/>
     <child link="r_Tproximal"/>
     <axis xyz="0 0 1"/>
-    <limit effort="0.5" lower="0.0" upper="1.5707963267948966" velocity="1.0"/>
+    <limit effort="50" lower="0.0" upper="1.5707963267948966" velocity="10.0"/>
     <dynamics damping="0.0001" friction="0"/>
   </joint>
   <transmission name="tran_r_T1">
@@ -1825,7 +1830,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/RH8D/thumb_phalanx_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/thumb_phalanx_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="rh8d_color"/>
     </visual>
@@ -1833,7 +1838,7 @@
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <!-- use different mesh as for vis -->
-        <mesh filename="/meshes/nicol_meshes/RH8D/thumb_phalanx_col.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/thumb_phalanx_col.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>
@@ -1844,7 +1849,7 @@
     <parent link="r_Tproximal"/>
     <child link="r_Tmiddle"/>
     <axis xyz="0 0 1"/>
-    <limit effort="0.5" lower="0.0" upper="1.5707963267948966" velocity="1.0"/>
+    <limit effort="50" lower="0.0" upper="1.5707963267948966" velocity="10.0"/>
     <dynamics damping="0.0001" friction="0"/>
   </joint>
   <transmission name="tran_r_T2">
@@ -1868,7 +1873,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/RH8D/thumb_phalanx_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/thumb_phalanx_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="rh8d_color"/>
     </visual>
@@ -1876,7 +1881,7 @@
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <!-- use same mesh as for vis -->
-        <mesh filename="/meshes/nicol_meshes/RH8D/thumb_phalanx_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/thumb_phalanx_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>
@@ -1887,7 +1892,7 @@
     <parent link="r_Tmiddle"/>
     <child link="r_Ttip"/>
     <axis xyz="0 0 1"/>
-    <limit effort="0.5" lower="0.0" upper="1.5707963267948966" velocity="1.0"/>
+    <limit effort="50" lower="0.0" upper="1.5707963267948966" velocity="10.0"/>
     <dynamics damping="0.0001" friction="0"/>
   </joint>
   <transmission name="tran_r_T3">
@@ -1911,7 +1916,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/RH8D/high_res/tip_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/high_res/tip_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="rh8d_color"/>
     </visual>
@@ -1919,7 +1924,7 @@
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <!-- use same mesh as for vis -->
-        <mesh filename="/meshes/nicol_meshes/RH8D/high_res/tip_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/high_res/tip_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>
@@ -1941,7 +1946,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/RH8D/high_res/sensor_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/high_res/sensor_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="rh8d_color"/>
     </visual>
@@ -1949,7 +1954,7 @@
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <!-- use same mesh as for vis -->
-        <mesh filename="/meshes/nicol_meshes/RH8D/high_res/sensor_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/high_res/sensor_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>
@@ -1989,7 +1994,7 @@
     <parent link="r_palm"/>
     <child link="r_Iproximal"/>
     <axis xyz="0 0 1"/>
-    <limit effort="0.5" lower="0.0" upper="1.5707963267948966" velocity="1.0"/>
+    <limit effort="50" lower="0.0" upper="1.5707963267948966" velocity="10.0"/>
     <dynamics damping="0.0001" friction="0"/>
   </joint>
   <transmission name="tran_r_I1">
@@ -2013,7 +2018,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/RH8D/phalanx_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/phalanx_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="rh8d_color"/>
     </visual>
@@ -2021,7 +2026,7 @@
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <!-- use same mesh as for vis -->
-        <mesh filename="/meshes/nicol_meshes/RH8D/phalanx_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/phalanx_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>
@@ -2032,7 +2037,7 @@
     <parent link="r_Iproximal"/>
     <child link="r_Imiddle"/>
     <axis xyz="0 0 1"/>
-    <limit effort="0.5" lower="0.0" upper="1.5707963267948966" velocity="1.0"/>
+    <limit effort="50" lower="0.0" upper="1.5707963267948966" velocity="10.0"/>
     <dynamics damping="0.0001" friction="0"/>
   </joint>
   <transmission name="tran_r_I2">
@@ -2056,7 +2061,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/RH8D/phalanx_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/phalanx_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="rh8d_color"/>
     </visual>
@@ -2064,7 +2069,7 @@
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <!-- use same mesh as for vis -->
-        <mesh filename="/meshes/nicol_meshes/RH8D/phalanx_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/phalanx_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>
@@ -2075,7 +2080,7 @@
     <parent link="r_Imiddle"/>
     <child link="r_Itip"/>
     <axis xyz="0 0 1"/>
-    <limit effort="0.5" lower="0.0" upper="1.5707963267948966" velocity="1.0"/>
+    <limit effort="50" lower="0.0" upper="1.5707963267948966" velocity="10.0"/>
     <dynamics damping="0.0001" friction="0"/>
   </joint>
   <transmission name="tran_r_I3">
@@ -2099,7 +2104,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/RH8D/high_res/tip_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/high_res/tip_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="rh8d_color"/>
     </visual>
@@ -2107,7 +2112,7 @@
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <!-- use same mesh as for vis -->
-        <mesh filename="/meshes/nicol_meshes/RH8D/high_res/tip_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/high_res/tip_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>
@@ -2129,7 +2134,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/RH8D/high_res/sensor_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/high_res/sensor_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="rh8d_color"/>
     </visual>
@@ -2137,7 +2142,7 @@
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <!-- use same mesh as for vis -->
-        <mesh filename="/meshes/nicol_meshes/RH8D/high_res/sensor_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/high_res/sensor_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>
@@ -2177,7 +2182,7 @@
     <parent link="r_palm"/>
     <child link="r_Mproximal"/>
     <axis xyz="0 0 1"/>
-    <limit effort="0.5" lower="0.0" upper="1.5707963267948966" velocity="1.0"/>
+    <limit effort="50" lower="0.0" upper="1.5707963267948966" velocity="10.0"/>
     <dynamics damping="0.0001" friction="0"/>
   </joint>
   <transmission name="tran_r_M1">
@@ -2201,7 +2206,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/RH8D/phalanx_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/phalanx_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="rh8d_color"/>
     </visual>
@@ -2209,7 +2214,7 @@
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <!-- use same mesh as for vis -->
-        <mesh filename="/meshes/nicol_meshes/RH8D/phalanx_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/phalanx_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>
@@ -2220,7 +2225,7 @@
     <parent link="r_Mproximal"/>
     <child link="r_Mmiddle"/>
     <axis xyz="0 0 1"/>
-    <limit effort="0.5" lower="0.0" upper="1.5707963267948966" velocity="1.0"/>
+    <limit effort="50" lower="0.0" upper="1.5707963267948966" velocity="10.0"/>
     <dynamics damping="0.0001" friction="0"/>
   </joint>
   <transmission name="tran_r_M2">
@@ -2244,7 +2249,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/RH8D/phalanx_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/phalanx_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="rh8d_color"/>
     </visual>
@@ -2252,7 +2257,7 @@
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <!-- use same mesh as for vis -->
-        <mesh filename="/meshes/nicol_meshes/RH8D/phalanx_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/phalanx_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>
@@ -2263,7 +2268,7 @@
     <parent link="r_Mmiddle"/>
     <child link="r_Mtip"/>
     <axis xyz="0 0 1"/>
-    <limit effort="0.5" lower="0.0" upper="1.5707963267948966" velocity="1.0"/>
+    <limit effort="50" lower="0.0" upper="1.5707963267948966" velocity="10.0"/>
     <dynamics damping="0.0001" friction="0"/>
   </joint>
   <transmission name="tran_r_M3">
@@ -2287,7 +2292,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/RH8D/high_res/tip_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/high_res/tip_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="rh8d_color"/>
     </visual>
@@ -2295,7 +2300,7 @@
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <!-- use same mesh as for vis -->
-        <mesh filename="/meshes/nicol_meshes/RH8D/high_res/tip_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/high_res/tip_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>
@@ -2317,7 +2322,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/RH8D/high_res/sensor_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/high_res/sensor_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="rh8d_color"/>
     </visual>
@@ -2325,7 +2330,7 @@
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <!-- use same mesh as for vis -->
-        <mesh filename="/meshes/nicol_meshes/RH8D/high_res/sensor_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/high_res/sensor_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>
@@ -2365,7 +2370,7 @@
     <parent link="r_palm"/>
     <child link="r_Rproximal"/>
     <axis xyz="0 0 1"/>
-    <limit effort="0.5" lower="0.0" upper="1.5707963267948966" velocity="1.0"/>
+    <limit effort="50" lower="0.0" upper="1.5707963267948966" velocity="10.0"/>
     <dynamics damping="0.0001" friction="0"/>
   </joint>
   <transmission name="tran_r_R1">
@@ -2389,7 +2394,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/RH8D/phalanx_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/phalanx_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="rh8d_color"/>
     </visual>
@@ -2397,7 +2402,7 @@
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <!-- use same mesh as for vis -->
-        <mesh filename="/meshes/nicol_meshes/RH8D/phalanx_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/phalanx_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>
@@ -2408,7 +2413,7 @@
     <parent link="r_Rproximal"/>
     <child link="r_Rmiddle"/>
     <axis xyz="0 0 1"/>
-    <limit effort="0.5" lower="0.0" upper="1.5707963267948966" velocity="1.0"/>
+    <limit effort="50" lower="0.0" upper="1.5707963267948966" velocity="10.0"/>
     <dynamics damping="0.0001" friction="0"/>
   </joint>
   <transmission name="tran_r_R2">
@@ -2432,7 +2437,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/RH8D/phalanx_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/phalanx_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="rh8d_color"/>
     </visual>
@@ -2440,7 +2445,7 @@
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <!-- use same mesh as for vis -->
-        <mesh filename="/meshes/nicol_meshes/RH8D/phalanx_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/phalanx_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>
@@ -2451,7 +2456,7 @@
     <parent link="r_Rmiddle"/>
     <child link="r_Rtip"/>
     <axis xyz="0 0 1"/>
-    <limit effort="0.5" lower="0.0" upper="1.5707963267948966" velocity="1.0"/>
+    <limit effort="50" lower="0.0" upper="1.5707963267948966" velocity="10.0"/>
     <dynamics damping="0.0001" friction="0"/>
   </joint>
   <transmission name="tran_r_R3">
@@ -2475,7 +2480,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/RH8D/high_res/tip_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/high_res/tip_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="rh8d_color"/>
     </visual>
@@ -2483,7 +2488,7 @@
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <!-- use same mesh as for vis -->
-        <mesh filename="/meshes/nicol_meshes/RH8D/high_res/tip_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/high_res/tip_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>
@@ -2505,7 +2510,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/RH8D/high_res/sensor_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/high_res/sensor_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="rh8d_color"/>
     </visual>
@@ -2513,7 +2518,7 @@
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <!-- use same mesh as for vis -->
-        <mesh filename="/meshes/nicol_meshes/RH8D/high_res/sensor_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/high_res/sensor_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>
@@ -2553,7 +2558,7 @@
     <parent link="r_palm"/>
     <child link="r_Lproximal"/>
     <axis xyz="0 0 1"/>
-    <limit effort="0.5" lower="0.0" upper="1.5707963267948966" velocity="1.0"/>
+    <limit effort="50" lower="0.0" upper="1.5707963267948966" velocity="10.0"/>
     <dynamics damping="0.0001" friction="0"/>
   </joint>
   <transmission name="tran_r_L1">
@@ -2577,7 +2582,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/RH8D/phalanx_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/phalanx_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="rh8d_color"/>
     </visual>
@@ -2585,7 +2590,7 @@
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <!-- use same mesh as for vis -->
-        <mesh filename="/meshes/nicol_meshes/RH8D/phalanx_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/phalanx_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>
@@ -2596,7 +2601,7 @@
     <parent link="r_Lproximal"/>
     <child link="r_Lmiddle"/>
     <axis xyz="0 0 1"/>
-    <limit effort="0.5" lower="0.0" upper="1.5707963267948966" velocity="1.0"/>
+    <limit effort="50" lower="0.0" upper="1.5707963267948966" velocity="10.0"/>
     <dynamics damping="0.0001" friction="0"/>
   </joint>
   <transmission name="tran_r_L2">
@@ -2620,7 +2625,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/RH8D/phalanx_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/phalanx_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="rh8d_color"/>
     </visual>
@@ -2628,7 +2633,7 @@
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <!-- use same mesh as for vis -->
-        <mesh filename="/meshes/nicol_meshes/RH8D/phalanx_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/phalanx_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>
@@ -2639,7 +2644,7 @@
     <parent link="r_Lmiddle"/>
     <child link="r_Ltip"/>
     <axis xyz="0 0 1"/>
-    <limit effort="0.5" lower="0.0" upper="1.5707963267948966" velocity="1.0"/>
+    <limit effort="50" lower="0.0" upper="1.5707963267948966" velocity="10.0"/>
     <dynamics damping="0.0001" friction="0"/>
   </joint>
   <transmission name="tran_r_L3">
@@ -2663,7 +2668,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/RH8D/high_res/tip_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/high_res/tip_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="rh8d_color"/>
     </visual>
@@ -2671,7 +2676,7 @@
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <!-- use same mesh as for vis -->
-        <mesh filename="/meshes/nicol_meshes/RH8D/high_res/tip_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/high_res/tip_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>
@@ -2693,7 +2698,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/RH8D/high_res/sensor_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/high_res/sensor_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="rh8d_color"/>
     </visual>
@@ -2701,7 +2706,7 @@
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <!-- use same mesh as for vis -->
-        <mesh filename="/meshes/nicol_meshes/RH8D/high_res/sensor_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/high_res/sensor_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>
@@ -2808,7 +2813,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/open_manipulator/link_1_reduced.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/open_manipulator/link_1_reduced.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="grey"/>
     </visual>
@@ -2827,7 +2832,7 @@
     <parent link="l_link1"/>
     <child link="l_link2"/>
     <axis xyz="0 0 1"/>
-    <limit effort="1000" lower="-3.141592653589793" upper="0" velocity="6.5"/>
+    <limit effort="1000" lower="-2.5" upper="0" velocity="6.5"/>
     <dynamics damping="0.1" friction="0"/>
   </joint>
   <transmission name="tran_l_1">
@@ -2851,7 +2856,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/open_manipulator/link_2_reduced.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/open_manipulator/link_2_reduced.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="grey"/>
     </visual>
@@ -2894,7 +2899,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/open_manipulator/link_3_reduced.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/open_manipulator/link_3_reduced.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="grey"/>
     </visual>
@@ -2902,7 +2907,7 @@
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <!-- use same mesh as for vis -->
-        <mesh filename="/meshes/nicol_meshes/open_manipulator/link_3_reduced.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/open_manipulator/link_3_reduced.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>
@@ -2937,7 +2942,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/open_manipulator/link_4_reduced.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/open_manipulator/link_4_reduced.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="grey"/>
     </visual>
@@ -2945,7 +2950,7 @@
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <!-- use same mesh as for vis -->
-        <mesh filename="/meshes/nicol_meshes/open_manipulator/link_4_reduced.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/open_manipulator/link_4_reduced.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>
@@ -2956,7 +2961,7 @@
     <parent link="l_link4"/>
     <child link="l_link5"/>
     <axis xyz="1 0 0"/>
-    <limit effort="1000" lower="-3.141592653589793" upper="3.141592653589793" velocity="6.5"/>
+    <limit effort="1000" lower="-2.9" upper="2.9" velocity="6.5"/>
     <dynamics damping="0.1" friction="0"/>
   </joint>
   <transmission name="tran_l_4">
@@ -2980,7 +2985,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/open_manipulator/link_5_reduced.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/open_manipulator/link_5_reduced.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="grey"/>
     </visual>
@@ -3023,7 +3028,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/open_manipulator/link_6_reduced.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/open_manipulator/link_6_reduced.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="grey"/>
     </visual>
@@ -3031,7 +3036,7 @@
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <!-- use same mesh as for vis -->
-        <mesh filename="/meshes/nicol_meshes/open_manipulator/link_6_reduced.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/open_manipulator/link_6_reduced.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>
@@ -3276,7 +3281,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/RH8D/forearm_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/forearm_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="rh8d_color"/>
     </visual>
@@ -3284,7 +3289,7 @@
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <!-- use same mesh as for vis -->
-        <mesh filename="/meshes/nicol_meshes/RH8D/forearm_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/forearm_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>
@@ -3294,8 +3299,8 @@
     <origin rpy="1.5707963267948966 0 0" xyz="0 0 0.184"/>
     <parent link="l_forearm"/>
     <child link="l_palm_axis"/>
-    <axis xyz="0 0 -1"/>
-    <limit effort="0.5" lower="-0.7853981633974483" upper="0.7853981633974483" velocity="1.0"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="50" lower="-0.7853981633974483" upper="0.7853981633974483" velocity="10.0"/>
     <dynamics damping="0.0001" friction="0"/>
   </joint>
   <transmission name="tran_l_7">
@@ -3319,7 +3324,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/RH8D/palm_axis_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/palm_axis_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="rh8d_color"/>
     </visual>
@@ -3327,7 +3332,7 @@
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <!-- use same mesh as for vis -->
-        <mesh filename="/meshes/nicol_meshes/RH8D/palm_axis_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/palm_axis_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>
@@ -3338,7 +3343,7 @@
     <parent link="l_palm_axis"/>
     <child link="l_palm"/>
     <axis xyz="0 0 1"/>
-    <limit effort="0.5" lower="-0.7853981633974483" upper="0.7853981633974483" velocity="1.0"/>
+    <limit effort="50" lower="-0.7853981633974483" upper="0.7853981633974483" velocity="10.0"/>
     <dynamics damping="0.0001" friction="0"/>
   </joint>
   <transmission name="tran_l_8">
@@ -3363,7 +3368,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/RH8D/high_res/left_palm_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/high_res/left_palm_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="rh8d_color"/>
     </visual>
@@ -3371,7 +3376,7 @@
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <!-- use same mesh as for vis -->
-        <mesh filename="/meshes/nicol_meshes/RH8D/high_res/left_palm_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/high_res/left_palm_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>
@@ -3400,7 +3405,7 @@
     <parent link="l_palm"/>
     <child link="l_thumb_base"/>
     <axis xyz="0 0 1"/>
-    <limit effort="0.5" lower="0.0" upper="1.5707963267948966" velocity="1.0"/>
+    <limit effort="50" lower="0.0" upper="1.5707963267948966" velocity="10.0"/>
     <dynamics damping="0.0001" friction="0"/>
   </joint>
   <transmission name="tran_l_T0">
@@ -3424,7 +3429,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/RH8D/thumb_base_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/thumb_base_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="rh8d_color"/>
     </visual>
@@ -3443,7 +3448,7 @@
     <parent link="l_thumb_base"/>
     <child link="l_Tproximal"/>
     <axis xyz="0 0 1"/>
-    <limit effort="0.5" lower="0.0" upper="1.5707963267948966" velocity="1.0"/>
+    <limit effort="50" lower="0.0" upper="1.5707963267948966" velocity="10.0"/>
     <dynamics damping="0.0001" friction="0"/>
   </joint>
   <transmission name="tran_l_T1">
@@ -3467,7 +3472,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/RH8D/thumb_phalanx_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/thumb_phalanx_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="rh8d_color"/>
     </visual>
@@ -3475,7 +3480,7 @@
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <!-- use different mesh as for vis -->
-        <mesh filename="/meshes/nicol_meshes/RH8D/thumb_phalanx_col.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/thumb_phalanx_col.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>
@@ -3486,7 +3491,7 @@
     <parent link="l_Tproximal"/>
     <child link="l_Tmiddle"/>
     <axis xyz="0 0 1"/>
-    <limit effort="0.5" lower="0.0" upper="1.5707963267948966" velocity="1.0"/>
+    <limit effort="50" lower="0.0" upper="1.5707963267948966" velocity="10.0"/>
     <dynamics damping="0.0001" friction="0"/>
   </joint>
   <transmission name="tran_l_T2">
@@ -3510,7 +3515,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/RH8D/thumb_phalanx_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/thumb_phalanx_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="rh8d_color"/>
     </visual>
@@ -3518,7 +3523,7 @@
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <!-- use same mesh as for vis -->
-        <mesh filename="/meshes/nicol_meshes/RH8D/thumb_phalanx_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/thumb_phalanx_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>
@@ -3529,7 +3534,7 @@
     <parent link="l_Tmiddle"/>
     <child link="l_Ttip"/>
     <axis xyz="0 0 1"/>
-    <limit effort="0.5" lower="0.0" upper="1.5707963267948966" velocity="1.0"/>
+    <limit effort="50" lower="0.0" upper="1.5707963267948966" velocity="10.0"/>
     <dynamics damping="0.0001" friction="0"/>
   </joint>
   <transmission name="tran_l_T3">
@@ -3553,7 +3558,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/RH8D/high_res/tip_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/high_res/tip_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="rh8d_color"/>
     </visual>
@@ -3561,7 +3566,7 @@
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <!-- use same mesh as for vis -->
-        <mesh filename="/meshes/nicol_meshes/RH8D/high_res/tip_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/high_res/tip_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>
@@ -3583,7 +3588,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/RH8D/high_res/sensor_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/high_res/sensor_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="rh8d_color"/>
     </visual>
@@ -3591,7 +3596,7 @@
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <!-- use same mesh as for vis -->
-        <mesh filename="/meshes/nicol_meshes/RH8D/high_res/sensor_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/high_res/sensor_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>
@@ -3631,7 +3636,7 @@
     <parent link="l_palm"/>
     <child link="l_Iproximal"/>
     <axis xyz="0 0 1"/>
-    <limit effort="0.5" lower="0.0" upper="1.5707963267948966" velocity="1.0"/>
+    <limit effort="50" lower="0.0" upper="1.5707963267948966" velocity="10.0"/>
     <dynamics damping="0.0001" friction="0"/>
   </joint>
   <transmission name="tran_l_I1">
@@ -3655,7 +3660,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/RH8D/phalanx_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/phalanx_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="rh8d_color"/>
     </visual>
@@ -3663,7 +3668,7 @@
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <!-- use same mesh as for vis -->
-        <mesh filename="/meshes/nicol_meshes/RH8D/phalanx_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/phalanx_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>
@@ -3674,7 +3679,7 @@
     <parent link="l_Iproximal"/>
     <child link="l_Imiddle"/>
     <axis xyz="0 0 1"/>
-    <limit effort="0.5" lower="0.0" upper="1.5707963267948966" velocity="1.0"/>
+    <limit effort="50" lower="0.0" upper="1.5707963267948966" velocity="10.0"/>
     <dynamics damping="0.0001" friction="0"/>
   </joint>
   <transmission name="tran_l_I2">
@@ -3698,7 +3703,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/RH8D/phalanx_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/phalanx_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="rh8d_color"/>
     </visual>
@@ -3706,7 +3711,7 @@
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <!-- use same mesh as for vis -->
-        <mesh filename="/meshes/nicol_meshes/RH8D/phalanx_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/phalanx_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>
@@ -3717,7 +3722,7 @@
     <parent link="l_Imiddle"/>
     <child link="l_Itip"/>
     <axis xyz="0 0 1"/>
-    <limit effort="0.5" lower="0.0" upper="1.5707963267948966" velocity="1.0"/>
+    <limit effort="50" lower="0.0" upper="1.5707963267948966" velocity="10.0"/>
     <dynamics damping="0.0001" friction="0"/>
   </joint>
   <transmission name="tran_l_I3">
@@ -3741,7 +3746,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/RH8D/high_res/tip_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/high_res/tip_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="rh8d_color"/>
     </visual>
@@ -3749,7 +3754,7 @@
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <!-- use same mesh as for vis -->
-        <mesh filename="/meshes/nicol_meshes/RH8D/high_res/tip_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/high_res/tip_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>
@@ -3771,7 +3776,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/RH8D/high_res/sensor_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/high_res/sensor_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="rh8d_color"/>
     </visual>
@@ -3779,7 +3784,7 @@
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <!-- use same mesh as for vis -->
-        <mesh filename="/meshes/nicol_meshes/RH8D/high_res/sensor_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/high_res/sensor_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>
@@ -3819,7 +3824,7 @@
     <parent link="l_palm"/>
     <child link="l_Mproximal"/>
     <axis xyz="0 0 1"/>
-    <limit effort="0.5" lower="0.0" upper="1.5707963267948966" velocity="1.0"/>
+    <limit effort="50" lower="0.0" upper="1.5707963267948966" velocity="10.0"/>
     <dynamics damping="0.0001" friction="0"/>
   </joint>
   <transmission name="tran_l_M1">
@@ -3843,7 +3848,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/RH8D/phalanx_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/phalanx_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="rh8d_color"/>
     </visual>
@@ -3851,7 +3856,7 @@
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <!-- use same mesh as for vis -->
-        <mesh filename="/meshes/nicol_meshes/RH8D/phalanx_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/phalanx_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>
@@ -3862,7 +3867,7 @@
     <parent link="l_Mproximal"/>
     <child link="l_Mmiddle"/>
     <axis xyz="0 0 1"/>
-    <limit effort="0.5" lower="0.0" upper="1.5707963267948966" velocity="1.0"/>
+    <limit effort="50" lower="0.0" upper="1.5707963267948966" velocity="10.0"/>
     <dynamics damping="0.0001" friction="0"/>
   </joint>
   <transmission name="tran_l_M2">
@@ -3886,7 +3891,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/RH8D/phalanx_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/phalanx_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="rh8d_color"/>
     </visual>
@@ -3894,7 +3899,7 @@
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <!-- use same mesh as for vis -->
-        <mesh filename="/meshes/nicol_meshes/RH8D/phalanx_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/phalanx_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>
@@ -3905,7 +3910,7 @@
     <parent link="l_Mmiddle"/>
     <child link="l_Mtip"/>
     <axis xyz="0 0 1"/>
-    <limit effort="0.5" lower="0.0" upper="1.5707963267948966" velocity="1.0"/>
+    <limit effort="50" lower="0.0" upper="1.5707963267948966" velocity="10.0"/>
     <dynamics damping="0.0001" friction="0"/>
   </joint>
   <transmission name="tran_l_M3">
@@ -3929,7 +3934,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/RH8D/high_res/optoforce_tip_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/high_res/optoforce_tip_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="rh8d_color"/>
     </visual>
@@ -3937,7 +3942,7 @@
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <!-- use same mesh as for vis -->
-        <mesh filename="/meshes/nicol_meshes/RH8D/high_res/optoforce_tip_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/high_res/optoforce_tip_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>
@@ -3959,7 +3964,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/RH8D/high_res/optoforce_sensor_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/high_res/optoforce_sensor_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="rh8d_color"/>
     </visual>
@@ -3967,7 +3972,7 @@
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <!-- use same mesh as for vis -->
-        <mesh filename="/meshes/nicol_meshes/RH8D/high_res/optoforce_sensor_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/high_res/optoforce_sensor_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>
@@ -4007,7 +4012,7 @@
     <parent link="l_palm"/>
     <child link="l_Rproximal"/>
     <axis xyz="0 0 1"/>
-    <limit effort="0.5" lower="0.0" upper="1.5707963267948966" velocity="1.0"/>
+    <limit effort="50" lower="0.0" upper="1.5707963267948966" velocity="10.0"/>
     <dynamics damping="0.0001" friction="0"/>
   </joint>
   <transmission name="tran_l_R1">
@@ -4031,7 +4036,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/RH8D/phalanx_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/phalanx_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="rh8d_color"/>
     </visual>
@@ -4039,7 +4044,7 @@
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <!-- use same mesh as for vis -->
-        <mesh filename="/meshes/nicol_meshes/RH8D/phalanx_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/phalanx_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>
@@ -4050,7 +4055,7 @@
     <parent link="l_Rproximal"/>
     <child link="l_Rmiddle"/>
     <axis xyz="0 0 1"/>
-    <limit effort="0.5" lower="0.0" upper="1.5707963267948966" velocity="1.0"/>
+    <limit effort="50" lower="0.0" upper="1.5707963267948966" velocity="10.0"/>
     <dynamics damping="0.0001" friction="0"/>
   </joint>
   <transmission name="tran_l_R2">
@@ -4074,7 +4079,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/RH8D/phalanx_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/phalanx_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="rh8d_color"/>
     </visual>
@@ -4082,7 +4087,7 @@
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <!-- use same mesh as for vis -->
-        <mesh filename="/meshes/nicol_meshes/RH8D/phalanx_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/phalanx_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>
@@ -4093,7 +4098,7 @@
     <parent link="l_Rmiddle"/>
     <child link="l_Rtip"/>
     <axis xyz="0 0 1"/>
-    <limit effort="0.5" lower="0.0" upper="1.5707963267948966" velocity="1.0"/>
+    <limit effort="50" lower="0.0" upper="1.5707963267948966" velocity="10.0"/>
     <dynamics damping="0.0001" friction="0"/>
   </joint>
   <transmission name="tran_l_R3">
@@ -4117,7 +4122,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/RH8D/high_res/tip_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/high_res/tip_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="rh8d_color"/>
     </visual>
@@ -4125,7 +4130,7 @@
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <!-- use same mesh as for vis -->
-        <mesh filename="/meshes/nicol_meshes/RH8D/high_res/tip_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/high_res/tip_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>
@@ -4147,7 +4152,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/RH8D/high_res/sensor_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/high_res/sensor_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="rh8d_color"/>
     </visual>
@@ -4155,7 +4160,7 @@
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <!-- use same mesh as for vis -->
-        <mesh filename="/meshes/nicol_meshes/RH8D/high_res/sensor_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/high_res/sensor_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>
@@ -4195,7 +4200,7 @@
     <parent link="l_palm"/>
     <child link="l_Lproximal"/>
     <axis xyz="0 0 1"/>
-    <limit effort="0.5" lower="0.0" upper="1.5707963267948966" velocity="1.0"/>
+    <limit effort="50" lower="0.0" upper="1.5707963267948966" velocity="10.0"/>
     <dynamics damping="0.0001" friction="0"/>
   </joint>
   <transmission name="tran_l_L1">
@@ -4219,7 +4224,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/RH8D/phalanx_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/phalanx_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="rh8d_color"/>
     </visual>
@@ -4227,7 +4232,7 @@
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <!-- use same mesh as for vis -->
-        <mesh filename="/meshes/nicol_meshes/RH8D/phalanx_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/phalanx_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>
@@ -4238,7 +4243,7 @@
     <parent link="l_Lproximal"/>
     <child link="l_Lmiddle"/>
     <axis xyz="0 0 1"/>
-    <limit effort="0.5" lower="0.0" upper="1.5707963267948966" velocity="1.0"/>
+    <limit effort="50" lower="0.0" upper="1.5707963267948966" velocity="10.0"/>
     <dynamics damping="0.0001" friction="0"/>
   </joint>
   <transmission name="tran_l_L2">
@@ -4262,7 +4267,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/RH8D/phalanx_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/phalanx_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="rh8d_color"/>
     </visual>
@@ -4270,7 +4275,7 @@
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <!-- use same mesh as for vis -->
-        <mesh filename="/meshes/nicol_meshes/RH8D/phalanx_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/phalanx_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>
@@ -4281,7 +4286,7 @@
     <parent link="l_Lmiddle"/>
     <child link="l_Ltip"/>
     <axis xyz="0 0 1"/>
-    <limit effort="0.5" lower="0.0" upper="1.5707963267948966" velocity="1.0"/>
+    <limit effort="50" lower="0.0" upper="1.5707963267948966" velocity="10.0"/>
     <dynamics damping="0.0001" friction="0"/>
   </joint>
   <transmission name="tran_l_L3">
@@ -4305,7 +4310,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/RH8D/high_res/tip_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/high_res/tip_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="rh8d_color"/>
     </visual>
@@ -4313,7 +4318,7 @@
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <!-- use same mesh as for vis -->
-        <mesh filename="/meshes/nicol_meshes/RH8D/high_res/tip_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/high_res/tip_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>
@@ -4335,7 +4340,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="/meshes/nicol_meshes/RH8D/high_res/sensor_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/high_res/sensor_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="rh8d_color"/>
     </visual>
@@ -4343,7 +4348,7 @@
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <!-- use same mesh as for vis -->
-        <mesh filename="/meshes/nicol_meshes/RH8D/high_res/sensor_refac.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://nias_description/meshes/RH8D/high_res/sensor_refac.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>

@@ -1,0 +1,51 @@
+right_arm:
+  train_data: 'results_valkyrie_8000'
+  test_data: 'results_valkyrie_800'
+  val_data: 'results_valkyrie_200_1'
+
+  robot_dof: 10
+  limits:
+    upper: [1.181, 0.666, 0.255, 2.0, 1.519, 2.18, 2.174, 3.14, 0.62, 0.36]
+    lower: [-1.329, -0.13, -0.23, -2.85, -1.266, -3.1, -0.12, -2.019, -0.625, -0.49]
+
+  workspace:
+    upper: [0.974, 0.723, 0.986]
+    lower: [-0.924, -0.973, -0.4]
+
+  robot_urdf: './assets/urdf/valkyrie_D.urdf'
+  robot_eef: 'rightPalm'
+  base_link: 'pelvis'
+  #zero_joints_goal: [ 0, 1, 2 ]
+
+  joint_name: [ "torsoYaw", "torsoPitch", "torsoRoll", "rightShoulderPitch",
+                "rightShoulderRoll", "rightShoulderYaw", "rightElbowPitch", "rightForearmYaw",
+                "rightWristRoll", "rightWristPitch"]
+  home_js: [-0.0032, -0.0016, -0.0051, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 ]
+  move_group: 'r_arm'
+
+  #################### Full #######################
+  FKNet:
+    training:
+      batch_size: 700
+      lr: 0.0001
+
+    architecture:
+      layers:  [1900, 2700, 3000, 2900, 450, 60, 10, 160]
+      nbr_tanh: 3
+      activation: "GELU"
+
+  IKNet:
+
+    position_weight: 9.
+    orientation_weight: 1.
+    zero_controller_weight: 2.
+
+    training:
+      batch_size: 100
+      lr: 0.00044
+
+    architecture:
+      layers: [ 2930, 1130, 1520, 570, 670, 770, 2250 ]
+      nbr_tanh: 1
+      activation: "GELU"
+

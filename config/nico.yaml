@@ -1,0 +1,144 @@
+right_arm:
+  train_data: 'results_nico_1250_6'
+  test_data: 'results_nico_125_6'
+  val_data: 'results_nico_200_6'
+
+  robot_dof: 6
+  limits:
+    upper: [0.8, 3.142, 0.314, 0.0, 1.571, 0.872665]
+    lower: [-0.8, -3.142, -1.57, -1.745, -1.571, 0.0]
+
+  workspace:
+    upper: [0.508, 0.2943, 1.23]
+    lower: [-0.492, -0.5742, 0.342]
+
+  robot_urdf: './assets/urdf/nico.urdf'
+  robot_eef: 'right_tcp'
+  base_link: 'torso:11'
+
+  joint_name: ["r_shoulder_z", "r_shoulder_y", "r_arm_x", "r_elbow_y", "r_wrist_z", "r_wrist_x"]
+  home_js: [ -0.157, 0.0, -1.57, -1.57, -1.39, 0.0 ]
+  move_group: 'right_arm'
+  #
+
+  #################### Full #######################
+  FKNet:
+    training:
+      batch_size: 700
+      lr: 0.0001
+
+    architecture:
+      layers:  [1900, 2700, 3000, 2900, 450, 60, 10, 160]
+      nbr_tanh: 3
+      activation: "GELU"
+
+  IKNet:
+
+    position_weight: 7.
+    orientation_weight: 1.
+
+    training:
+      batch_size: 300
+      lr: 0.00037
+
+    architecture:
+      layers: [ 2270, 560, 1100, 1990, 2590, 870 ]
+      nbr_tanh: 1
+      activation: "GELU"
+
+
+left_arm:
+  train_data: 'results_nico_1000_left_arm'
+  test_data: 'results_nico_100_left_arm'
+  val_data: 'results_nico_200_left_arm'
+
+  robot_dof: 6
+  limits:
+    upper: [ 0.8, 3.142, 1.57, 1.745, 1.571, 0]
+    lower: [ -0.8, -3.142, -0.314, 0.0, -1.571, -0.872665 ]
+
+  workspace:
+    upper: [0.509, 0.573, 1.229]
+    lower: [-0.488, -0.289, 0.343]
+
+  robot_urdf: './assets/urdf/nico.urdf'
+  robot_eef: 'left_tcp'
+  base_link: 'torso:11'
+
+  joint_name: ["l_shoulder_z", "l_shoulder_y", "l_arm_x", "l_elbow_y", "l_wrist_z", "l_wrist_x"]
+
+  debug:
+    # front
+    #pose: [0.2, 0., 0.6, 0.73237, 0.053969, 0.67814, -0.029085]
+    # upward
+    pose: [ 0.23185, -0.109, 0.75, 0.7, 0.0, 0., 0.7]
+    # downward
+    #pose: [0.15, 0.05, 0.5, 1.0, 0., 0., 0.]
+    axis: 'Y'
+    points: 10
+  #################### Full #######################
+  FKNet:
+    training:
+      batch_size: 700
+      lr: 0.0001
+
+    architecture:
+      layers:  [1900, 2700, 3000, 2900, 450, 60, 10, 160]
+      nbr_tanh: 3
+      activation: "GELU"
+
+  IKNet:
+
+    position_weight: 7.
+    orientation_weight: 1.
+
+    training:
+      batch_size: 300
+      lr: 0.00037
+
+    architecture:
+      layers: [ 2270, 560, 1100, 1990, 2590, 870 ]
+      nbr_tanh: 1
+      activation: "GELU"
+
+
+right_leg:
+  train_data: 'results_nico_1000_right_leg'
+  test_data: 'results_nico_10_right_leg'
+  val_data: 'results_nico_100_right_leg'
+
+  robot_dof: 6
+  limits:
+    upper: [0.6981, 1.2217, 0.5585, 1.2915, 0.7853, 0.7853]
+    lower: [-0.6981, -0.4188, -1.5707, -1.5358, -0.7853, -0.7853]
+
+  workspace:
+    upper: [0.5027, 0.3971, 0.6776]
+    lower: [-0.4262, -0.3806, -0.0063]
+
+  robot_urdf: './assets/urdf/nico.urdf'
+  robot_eef: 'right_foot:11'
+  base_link: 'torso:11'
+
+  #################### Full #######################
+  FKNet:
+    training:
+      batch_size: 700
+      lr: 0.0001
+
+    architecture:
+      layers:  [1900, 2700, 3000, 2900, 450, 60, 10, 160]
+      nbr_tanh: 3
+      activation: "GELU"
+
+  IKNet:
+    training:
+      batch_size: 250
+      lr: 0.0002
+
+    architecture:
+      layers: [ 2760, 1040, 2910, 3390, 2690, 340, 710, 1170, 690 ]
+      nbr_tanh: 1
+      activation: "GELU"
+
+  ###################################################

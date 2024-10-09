@@ -1,0 +1,57 @@
+arm:
+  train_data: 'results_panda_1000_4'
+  test_data: 'results_panda_100_4'
+  val_data: 'results_panda_200_4'
+
+  limits:
+    upper: [2.8973, 1.7628, 2.8973, -0.0698, 2.8973, 3.7525, 2.8973]
+    lower: [-2.8973, -1.7628, -2.8973, -3.0718, -2.8973, -0.0175, -2.8973]
+
+  workspace:
+    upper: [0.945, 0.946, 1.28]
+    lower: [-0.946, -0.946, -0.425]
+
+  robot_dof: 7
+  robot_urdf: './assets/urdf/panda.urdf'
+  robot_eef: 'panda_hand_tcp'
+  base_link: 'world'
+
+  joint_name: ["panda_joint1", "panda_joint2", "panda_joint3", "panda_joint4", "panda_joint5", "panda_joint6", "panda_joint7"]
+  home_js: [0.0, -0.785398, 0.0, -2.35619, 0.0, 1.5708, 0.785398]
+  move_group: 'panda_manipulator'
+  #zero_joints_goal: [ 1 ]
+
+  debug:
+    # front
+    #pose: [0.2, 0., 0.6, 0.73237, 0.053969, 0.67814, -0.029085]
+    # upward
+    pose: [0.2, 0., 0.8, 0.0, 0.0, 0.0, 1.0]
+    # downward
+    #pose: [0.15, 0.05, 0.5, 1.0, 0., 0., 0.]
+    axis: 'X'
+    points: 1
+    null_space_samples: 100
+
+  IKNet:
+
+    position_weight: 16.
+    orientation_weight: 2.
+
+    training:
+      batch_size: 100
+      lr: 0.00024
+
+    architecture:
+      layers: [1370, 880, 2980, 1000, 2710, 2290, 880]
+      nbr_tanh: 1
+      activation: "GELU"
+
+  FKNet:
+    training:
+      batch_size: 700
+      lr: 0.0001
+
+    architecture:
+      layers:  [1900, 2700, 3000, 2900, 450, 60, 10, 160]
+      nbr_tanh: 3
+      activation: "GELU"

@@ -135,5 +135,5 @@ nicol_venv/
 /models/
 /weights/
 /optuna/
-/img/losses/*
-/data/
+/img/
+/tb_logs/
