@@ -41,7 +41,7 @@ Open Access: https://link.springer.com/chapter/10.1007/978-3-031-44207-0_38
 Best practice is to use anaconda or miniconda
 
 ```bash
-git clone -b dev https://git.informatik.uni-hamburg.de/jangerritha/cycleik.git
+git clone https://github.com/jangerritha/CycleIK.git
 cd cycleik/
 pip install -r requirements.txt
 pip install -e .
