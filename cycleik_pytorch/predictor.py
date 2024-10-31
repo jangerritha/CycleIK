@@ -17,7 +17,7 @@ from scipy.spatial.transform import Slerp
 
 class CycleIK:
 
-    def __init__(self, robot, cuda_device=None, verbose=False, chain="", nicol_compatibility_mode=False):
+    def __init__(self, robot, cuda_device=None, verbose=False, chain="", nicol_compatibility_mode=False, use_gan=False):
         assert robot is not None and type(robot) == str, "Robot name must be set as string with valid config in path"
 
         data_path = os.path.dirname(os.path.abspath(__file__))
@@ -41,6 +41,7 @@ class CycleIK:
         self.config = load_config(robot)[f'{chain}']
         self.verbose = verbose
         self.chain = chain
+        self.use_gan = use_gan
 
         self.robot_dof   = self.config["robot_dof"]
         self.robot_urdf  = self.config["robot_urdf"]
@@ -66,7 +67,7 @@ class CycleIK:
                                     nbr_tanh=self.config["IKNet"]["architecture"]["nbr_tanh"],
                                     activation=self.config["IKNet"]["architecture"]["activation"],
                                     layers=self.config["IKNet"]["architecture"]["layers"]).to(self.device)
-        if self.config["robot_dof"] > 6:
+        if self.config["robot_dof"] > 6 and self.use_gan:
             self.gan = GenericNoisyGenerator(input_size=7, output_size=self.robot_dof,
                                           noise_vector_size=self.config["GAN"]["architecture"]["noise_vector_size"],
                                           nbr_tanh=self.config["GAN"]["architecture"]["nbr_tanh"],
@@ -99,7 +100,7 @@ class CycleIK:
 
         self.model.eval()
 
-        if self.config["robot_dof"] > 6:
+        if self.config["robot_dof"] > 6  and self.use_gan:
             try:
                 self.gan.load_state_dict(torch.load(os.path.join(data_path, "weights", str(self.robot), f"model_GAN_with_kinematics_{self.chain}.pth"), map_location=self.device))
             except FileNotFoundError as e:

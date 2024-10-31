@@ -54,3 +54,82 @@ right_arm:
       layers: [ 2780, 3480, 1710, 2880, 1750, 1090, 1470 ]
       nbr_tanh: 1
       activation: "GELU"
+
+  GAN:
+    position_weight: 100.
+    orientation_weight: 20.
+    variance_weight: 80.
+
+    training:
+      batch_size: 300
+      lr: 0.00019
+
+    architecture:
+      noise_vector_size: 8
+      layers: [ 1180, 1170, 2500, 1290, 700, 970, 440, 770 ]
+      nbr_tanh: 2
+      activation: "GELU"
+
+
+left_arm:
+
+  train_data: 'results_nicol_1400_left'
+  test_data: 'results_nicol_140_left'
+  val_data: 'results_nicol_140_left'
+
+  robot_dof: 8
+  limits:
+    upper: [0., 1.8, 1.5, 2.9, 1.570796, 3.141592, 0.785398, 0.785398]
+    lower: [-2.5, -1.5, -2.25, -2.9, -1.570796, -3.141592, -0.785398, -0.785398]
+
+  workspace:
+    upper: [0.848, 0.9, 1.4]
+    lower: [0.2, -0.4781, 0.8]
+
+
+  robot_urdf: './assets/urdf/NICOL.urdf'
+  robot_eef: 'l_laser'
+  base_link: world
+
+  zero_joints_goal: [3, 4, 5]
+
+  FKNet:
+    training:
+      batch_size: 700
+      lr: 0.0001
+
+    architecture:
+      layers:  [1900, 2700, 3000, 2900, 450, 60, 10, 160]
+      nbr_tanh: 3
+      activation: "GELU"
+
+  IKNet:
+    pretrained_weights: "https://drive.google.com/uc?export=download&id=1pgben2__06Ro44q9_3_JQpof5GmUvlEB"
+
+    position_weight: 9.
+    orientation_weight: 2.
+    zero_controller_weight: [5000., 200., 5000.]
+
+    training:
+      batch_size: 100
+      lr: 0.00018
+
+    architecture:
+      layers: [ 2780, 3480, 1710, 2880, 1750, 1090, 1470 ]
+      nbr_tanh: 1
+      activation: "GELU"
+
+  GAN:
+    position_weight: 10.
+    orientation_weight: 2.
+    variance_weight: 100.
+
+    training:
+      batch_size: 300
+      lr: 0.00019
+
+    architecture:
+      noise_vector_size: 10
+      layers: [ 1180, 1170, 2500, 1290, 700, 970, 440, 770 ]
+      nbr_tanh: 2
+      activation: "GELU"
