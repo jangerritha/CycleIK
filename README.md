@@ -19,7 +19,7 @@ function to be evaluated by the multi-objective function under constraints L.
 ### Publications
 ```
 Inverse Kinematics for Neuro-Robotic Grasping with Humanoid Embodied Agents. (2024). 
-Habekost, JG., Strahl, E., Allgeuer, P., Kerzel, M., Wermter, S. 
+Habekost, JG., Gaede, C., Allgeuer, P., Wermter, S. 
 Accepted at IROS 2024.
 ```
 Arxiv: https://arxiv.org/html/2404.08825
