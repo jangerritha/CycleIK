@@ -36,6 +36,8 @@ right_arm:
 
   IKNet:
 
+    pretrained_weights: "https://drive.google.com/uc?export=download&id=1NVzPwDPlKPUmq_q5Yjm6RIal9ZfXe3Oe"
+
     position_weight: 9.
     orientation_weight: 1.
     zero_controller_weight: 2.
