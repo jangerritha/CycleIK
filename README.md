@@ -49,6 +49,8 @@ pip install -e .
 ### Usage
 
 ```bash
+from cycleik_pytorch import CycleIK
+
 cycleik = CycleIK(robot="nicol", cuda_device='0', verbose=True, chain="right_arm")
 
 start_pose = np.array([0.3, -0.5, 0.99, 0.0015305, 0.0009334, 0.70713, 0.70708])
