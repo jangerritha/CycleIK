@@ -15,6 +15,11 @@ import gdown
 from .Bezier import Bezier
 from scipy.spatial.transform import Slerp
 
+if torch.cuda.is_available():
+    major, minor = torch.cuda.get_device_capability()
+    if major >= 8:  # Ampere/Ada/Hopper
+        torch.set_float32_matmul_precision("high")
+
 class CycleIK:
 
     def __init__(self, robot, cuda_device=None, verbose=False, chain="", nicol_compatibility_mode=False, use_gan=False):
@@ -99,6 +104,7 @@ class CycleIK:
             raise e
 
         self.model.eval()
+        self.model = torch.compile(self.model)
 
         if self.config["robot_dof"] > 6  and self.use_gan:
             try:
@@ -148,7 +154,8 @@ class CycleIK:
             js.append(js_temp)
         return poses, js
 
-    @torch.no_grad()
+    @torch.inference_mode()
+    #@torch.compile
     def inverse_kinematics(self, poses: np.ndarray, calculate_error = False):
         st = time.time()
         poses = torch.Tensor(poses).to(self.device)
@@ -173,7 +180,7 @@ class CycleIK:
 
             et = time.time()
             elapsed_time_fk = et - st
-            print(f'PK Pose: {forward_result}')
+            if self.verbose: print(f'PK Pose: {forward_result}')
 
             unnormalized_poses_rot = unnormalized_poses.detach().cpu().numpy()
             reached_poses_rot = forward_result.detach().cpu().numpy()
@@ -294,7 +301,7 @@ class CycleIK:
 
         return js_result
 
-    @torch.no_grad()
+    @torch.inference_mode()
     def forward_kinematics(self, joint_states: np.ndarray):
         joint_states = torch.Tensor(joint_states).to(self.device)
         bs = len(joint_states)
@@ -303,31 +310,32 @@ class CycleIK:
         return forward_result.detach().cpu().numpy()
 
     @staticmethod
-    def generate_cubic_bezier_trajectory(start_pose=None, target_pose=None, control_points=[], points=100):
+    def generate_cubic_bezier_trajectory(start_pose=None, target_pose=None, control_points=[], points=100, verbose=False):
         t_step = np.divide(1, points)
         points_set = np.empty((2 + len(control_points), 3))
         points_set[0] = start_pose[:3]
-        for e, control_point in enumerate(control_points):
-            #print(control_point[e])
-            points_set[e + 1] = control_point[:3]
+        if len(control_points) > 0:
+            for e, control_point in enumerate(control_points):
+                #print(control_point[e])
+                points_set[e + 1] = control_point[:3]
         points_set[-1] = target_pose[:3]
         t_points = np.arange(0, 1, t_step)
         t_points = np.concatenate((t_points, np.array([1.0])), axis=0)
 
-        print(f' t_point: {t_points}')
+        if verbose: print(f' t_point: {t_points}')
 
         #print(points_set)
         curve = Bezier.Curve(t_points, points_set)
         #print(curve)
 
         diff_start_end_rotation = np.abs(np.subtract(target_pose[3:], start_pose[3:]))
-        print(diff_start_end_rotation)
+        if verbose: print(diff_start_end_rotation)
         end_diff = False
         for quat_val in diff_start_end_rotation:
             if quat_val > 0.03:
                 end_diff = True
         
-        print(f'orientation diff?: {end_diff}')
+        if verbose: print(f'orientation diff?: {end_diff}')
 
         #positive_difference = np.sum(np.abs(np.subtract(target_pose[3:], start_pose[3:])), axis=0)
         #negative_difference = np.sum(np.abs(np.subtract(-target_pose[3:], start_pose[3:])), axis=0)
@@ -335,24 +343,28 @@ class CycleIK:
         #if positive_difference > negative_difference:
         #    target_pose[3:] = -target_pose[3:]
 
-        if control_points.shape[1] == 7 or (end_diff):
+        #control_points = np.array([np.array(control_points)])
+
+        if (len(control_points) > 0 and control_points.shape[1] == 7) or (end_diff):
             key_rots = []
             key_rots.append(start_pose[3:])
-            if control_points.shape[1] == 7:
+            if (len(control_points) > 0 and control_points.shape[1] == 7):
                 for control_rot in control_points:
                     key_rots.append(control_rot[3:])
             key_rots.append(target_pose[3:])
 
-            print(f'ctrl points shape: {control_points.shape}')
-            print(f'key rots: {key_rots}')
+            if verbose:
+                print(f'ctrl points shape: {control_points}')
+                print(f'key rots: {key_rots}')
 
             #key_rots = np.array(key_rots)
 
-            if control_points.shape[1] == 7:
-                print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n\n\n')
+            if (len(control_points) > 0 and control_points.shape[1] == 7):
+                #print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n\n\n')
                 key_times = list(np.arange(0, 1, (1 / (len(key_rots) - 1))))
                 key_times.append(1)
-                print(key_times)
+                if verbose: print(f'key times: {key_times}')
+                #print(key_times)
             else:
                 key_times = [0, 1]
 
@@ -369,7 +381,7 @@ class CycleIK:
 
         #print(interp_rots)
         res_curve = np.concatenate((np.array(curve), np.array(interp_rots)), axis=1)
-        print(res_curve)
+        if verbose: print(f'result curve: {res_curve}')
         return res_curve
         
 
