@@ -103,15 +103,67 @@ class MLPTrainer(BaseTrainer):
         #zero_joints_loss_ik = torch.mean(torch.multiply(self.zero_controller_weight_tensor, zero_joints_loss_ik))
         return zero_joints_loss_ik
 
+    def smoothness_loss(self, poses, q, k=4, max_dist=None, eps=1e-6):
+        """
+        poses: (N, P)
+        q:     (N, D)
+        k:     number of neighbors per point
+        max_dist: optional radius; if set, ignore neighbors farther than this
+        """
+        # pairwise distances in task space
+        # shape: (N, N)
+        with torch.no_grad():
+            dists = torch.cdist(poses, poses, p=2)  # (N, N)
+            # ignore self-distance by setting it to +inf so it's never picked
+            N = poses.shape[0]
+            dists = dists + torch.eye(N, device=dists.device) * 1e9
+
+            # get k nearest neighbors for each point
+            neigh_dists, neigh_idx = torch.topk(dists, k=k, dim=-1, largest=False)
+
+            if max_dist is not None:
+                # mask out neighbors that are too far
+                mask = neigh_dists < max_dist
+            else:
+                mask = torch.ones_like(neigh_dists, dtype=torch.bool)
+
+        # gather neighbor joint states
+        # q: (N, D), neigh_idx: (N, k) -> q_neighbors: (N, k, D)
+        q_neighbors = q[neigh_idx]              # (N, k, D)
+        q_expanded = q.unsqueeze(1)             # (N, 1, D)
+        dq = q_neighbors - q_expanded           # (N, k, D)
+
+        # same for pose distances
+        d = neigh_dists                         # (N, k)
+
+        # mask out invalid neighbors
+        mask = mask & torch.isfinite(d)
+        if mask.sum() == 0:
+            return torch.tensor(0.0, device=q.device, dtype=q.dtype)
+
+        # compute squared joint diffs
+        dq2 = (dq ** 2).sum(dim=-1)             # (N, k)
+
+        # Lipschitz-style penalty
+        loss_ij = dq2 / (d ** 2 + eps)          # (N, k)
+
+        # apply mask
+        loss_ij = loss_ij[mask]
+
+        return loss_ij.mean()
+
     def training_step(self, data, i):
         gt_A = data["gt_A"].to(self.device)
         gt_B = data["gt_B"].to(self.device)
         real_B = data["real_B"].to(self.device)
         bs = len(gt_B)
 
-        if i % 2 == 0:
-            gt_B[:, 3:] = -gt_B[:, 3:]
-            #real_B[:, 3:] = -real_B[:, 3:]
+        #if i % 2 == 0:
+        #    gt_B[:, 3:] = -gt_B[:, 3:]
+        #    #real_B[:, 3:] = -real_B[:, 3:]
+
+        mask_sign = (torch.rand(len(gt_B), device=gt_B.device) < 0.5).unsqueeze(1)  # (N,1)
+        gt_B[:, 3:] = torch.where(mask_sign, -gt_B[:, 3:], gt_B[:, 3:])
 
         cycle_loss_A2B_position = None
         cycle_loss_A2B_orientation = None
@@ -141,6 +193,7 @@ class MLPTrainer(BaseTrainer):
         else:
             js = renormalize_joint_state(backward_B2A, bs, single_renormalize=self.single_renormalize,
                                          single_renormalize_move=self.single_renormalize_move)
+            #js[:,6] = torch.clamp(js[:,6], min=-2.8, max=2.8)
             fk_tensor = self.chain.forward_kinematics(js)
             forward_result = slice_fk_pose(fk_tensor, bs)
 
@@ -159,14 +212,16 @@ class MLPTrainer(BaseTrainer):
         #self.loss_history[0].append(cycle_loss_B2A_position.clone().detach().cpu())
         #self.loss_history[1].append(cycle_loss_B2A_orientation.clone().detach().cpu())
 
+        smoothness_loss = self.smoothness_loss(real_B, js, k=3, max_dist=0.03)
+
         if self.zero_joints_goal:
             zero_joints_loss_ik = self.calculate_zero_joints_loss(js, bs)
             #if self.zero_joints_goal:
             #    self.loss_history[2].append(zero_joints_loss_ik.clone().detach().cpu())
-            errG = cycle_loss_B2A_position * ( self.position_weight * 1000) + cycle_loss_B2A_orientation * (self.orientation_weight * 1000) + torch.mean(torch.multiply(self.zero_controller_weight_tensor, zero_joints_loss_ik))
+            errG = cycle_loss_B2A_position * ( self.position_weight * 1000) + cycle_loss_B2A_orientation * (self.orientation_weight * 1000) + torch.mean(torch.multiply(self.zero_controller_weight_tensor, zero_joints_loss_ik)) + smoothness_loss
             zero_joints_loss_ik = torch.mean(zero_joints_loss_ik)
         else:
-            errG = cycle_loss_B2A_position * self.position_weight + cycle_loss_B2A_orientation * self.orientation_weight
+            errG = cycle_loss_B2A_position * self.position_weight + cycle_loss_B2A_orientation * self.orientation_weight + smoothness_loss
             zero_joints_loss_ik = torch.Tensor([0])
 
         #errG.register_hook(lambda grad: print(grad))
