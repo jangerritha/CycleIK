@@ -40,7 +40,7 @@ right_arm:
       activation: "GELU"
 
   IKNet:
-    pretrained_weights: "https://drive.google.com/uc?export=download&id=1oSFayrzvXtVsbzSp7HS8vVJ83EL2-Ggn"
+    pretrained_weights: "https://drive.google.com/uc?export=download&id=1bvGY1kVNQ47Ja4JvEB24EXsW3IeZmePu"
 
     position_weight: 9.
     orientation_weight: 2.
